@@ -1,0 +1,13 @@
+.ui.segment.pushable {
+  height: -webkit-fill-available;
+  height: 100%;
+  margin-top: 0px;
+  border: 0px;
+  padding-top: 50px;
+}
+#root {
+  height: 100%;
+}
+/* #FormGrid{
+  margin-top: 15%;
+} */
