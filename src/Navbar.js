@@ -21,11 +21,10 @@ class Navbar extends React.Component {
     handleSidebarHide = () => this.setState({ visible: false })
 
     render() {
-        
+        const isAuthenticated = false;
         const { visible } = this.state
         return (
-            <Router>
-
+            
             <div>
             <div className="ui top attached menu" style={{}}>
                     <a className="item" onClick={this.handleButtonClick}>
@@ -33,7 +32,7 @@ class Navbar extends React.Component {
                         STP Dashboard - Admin
                     </a>
             </div>
-
+            
             <Sidebar.Pushable as={Segment}>
                 <Sidebar as={Menu} animation='overlay' icon='labeled' vertical
                 visible={visible}
@@ -63,18 +62,20 @@ class Navbar extends React.Component {
                 </Sidebar>
                 
                     <div>
-                        <Route path="/" component = {Status} >
-                        <Route path="status" component = {Status} />
                         
-                        <Route path="logs" component = {Logs} />
-                        </Route>
+                        <Route path="/status" component = {Status} />
+                        
+                        <Route path="/logs" component = {Logs} />
+                        {/* </Route> */}
                     </div>
                 
             </Sidebar.Pushable>
             </div>
-            </Router>
         )
     }
+}
+const Dash = () =>{
+    
 }
 
 export default Navbar

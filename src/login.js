@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 // import logo from './logo.svg';
 import './App.css';
 import  {Message, Select, Button, Form, Grid, Container } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
 var opts = [
     {
@@ -59,23 +60,23 @@ class Login extends Component{
         <Container>
             <div id='FormGrid'>
                 <Grid centered columns={3} verticalAlign='middle' cenetered='true'>
-                <Grid.Column>
-                    <Form onSubmit={this.handleSubmit} error >
-                    <Form.Field>
-                        <label>Username</label>
-                        <input placeholder='Username..' type='text' onChange={this.namehandle} required />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Password</label>
-                        <input placeholder='Password' type='password' onChange={this.pwhandle} required />
-                    </Form.Field>
-                    <Form.Field>
-                        <Select placeholder='Select your role' options={opts} onChange={this.select} required />
-                    </Form.Field>
-                        {/* <Message error header='Error' content='Please check the contents of the form' /> */}
-                        <Button type='submit'>Submit</Button>
-                    </Form> 
-                </Grid.Column>
+                    <Grid.Column>
+                        <Form error >
+                            <Form.Field>
+                                <label>Username</label>
+                                <input placeholder='Username..' type='text' onChange={this.namehandle} required />
+                            </Form.Field>
+                            <Form.Field>
+                                <label>Password</label>
+                                <input placeholder='Password' type='password' onChange={this.pwhandle} required />
+                            </Form.Field>
+                            <Form.Field>
+                                <Select placeholder='Select your role' options={opts} onChange={this.select} required />
+                            </Form.Field>
+                                {/* <Message error header='Error' content='Please check the contents of the form' /> */}
+                            <Link to="/dashboard"><Button type='submit'>Submit</Button></Link>
+                        </Form> 
+                    </Grid.Column>
                 </Grid>
             </div>
       </Container>
