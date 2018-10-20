@@ -1,6 +1,8 @@
-var restify = require('restify');
-var Sequelize = require('sequelize')
-var Tank = require('./models/Tank')
+const restify = require('restify'),
+      Sequelize = require('sequelize'),
+      config = require('./config');
+      Tank = require('./models/Tank'),
+      User = require('./models/User')
 var sequelize = new Sequelize('stp', 'root', 'root', {
   dialect: 'mysql'
 })

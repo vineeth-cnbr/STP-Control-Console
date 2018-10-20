@@ -1,16 +1,35 @@
 var Sequelize = require('sequelize');
-var sequelize = new Sequelize('stp', 'root', 'root', { dialect: 'mysql'});
+var sequelize = new Sequelize('stp', 'root', 'root', { dialect: 'mysql' });
 
 var Tank = sequelize.define('tank', {
-  id: {
-  type: Sequelize.STRING,
-  primaryKey: true
-  },
-  length: Sequelize.INTEGER,
-  breadth: Sequelize.INTEGER,
-  height: Sequelize.INTEGER,
-  status: Sequelize.BOOLEAN,
-  level: Sequelize.INTEGER(3)
+	id: {
+		type: Sequelize.STRING,
+		primaryKey: true
+	},
+	length: {
+		type: Sequelize.INTEGER,
+		defaultValue: null
+	},
+	breadth: {
+		type: Sequelize.INTEGER,
+		defaultValue: null
+	},
+	height: {
+		type: Sequelize.INTEGER,
+		defaultValue: null
+	},
+	status: {
+		type: Sequelize.BOOLEAN,
+		defaultValue: false
+	},
+	level: {
+		type: Sequelize.INTEGER,
+		validate: {
+			max: 100,
+			min: 0
+		},
+		defaultValue: null
+	}
 });
 
 

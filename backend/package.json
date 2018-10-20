@@ -10,9 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "jsonwebtoken": "^8.3.0",
     "mariasql": "^0.2.6",
     "mysql2": "^1.6.1",
     "restify": "^7.2.1",
+    "restify-jwt-community": "^1.0.8",
     "sequelize": "^4.41.0"
   }
 }
