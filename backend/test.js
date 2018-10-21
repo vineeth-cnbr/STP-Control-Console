@@ -1,33 +1,13 @@
-const mysql = require('mysql');
-const db = mysql.createConnection ({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'stp'
-});
+const User = require('./models/User');
+const auth = require('./tools/auth');
+// User.create({username: "abc", password: "234", name: "Pradeep"});
+// User.update({password: '123'}, {where: {username: 'vineeth-cnbr'} });
 
-// connect to database
-db.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('Connected to database');
-});
-global.db = db;
+auth.authenticate('absc','134')
+    .then( user => {
+        console.log(user);
+    })
+    .catch( err => {
+        console.log(err);
+    })
 
-var obj = {
-    tank: 'C101',
-    field: 'status',
-    value: false
-}
-var query = 'UPDATE tank SET ' + obj.field + "=" + obj.value + " where id ='" + obj.tank + "';"; 
-
-db.query(query, (error, results, fields) =>{
-    if(error){
-        console.log(results);
-        // res.send(error);
-    }else {
-        console.log(results)
-        // consoresults);
-    }
-})
