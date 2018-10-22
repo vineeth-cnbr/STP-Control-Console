@@ -43,13 +43,13 @@ class Navbar extends React.Component {
                     <Image src='img/mstile-310x150.png' size='mini' width="100%" circular centered/>
                 </Menu.Item>
                 
-                <Link to="/status">
+                <Link to="/dashboard">
                     <Menu.Item as='a'>
                         <Icon name='newspaper' />
                         Status
                     </Menu.Item>
                 </Link>
-                <Link to="/logs">
+                <Link to="/dashboard/logs">
                     <Menu.Item as='a'>
                         <Icon name='file alternate outline' />
                         Logs
@@ -63,9 +63,9 @@ class Navbar extends React.Component {
                 
                     <div>
                         
-                        <Route path="/status" component = {Status} />
+                        <Route path="/dashboard" component = {Status} />
                         
-                        <Route path="/logs" component = {Logs} />
+                        <Route path="/dashboard/logs" component = {Logs} />
                         {/* </Route> */}
                     </div>
                 

@@ -6,9 +6,19 @@ const restify = require('restify'),
   auth = require('./tools/auth'),
   rjwt = require('restify-jwt-community'),
   jwt = require('jsonwebtoken');
-var sequelize = new Sequelize('stp', 'root', 'root', {
-  dialect: 'mysql'
+  var sequelize = new Sequelize('stp', 'root', 'root', {
+    dialect: 'mysql'
+  })
+
+const corsMiddleware = require('restify-cors-middleware')
+ 
+const cors = corsMiddleware({
+  preflightMaxAge: 5, //Optional
+  origins: ['http://localhost:3000', 'http://localhost:8080'],
 })
+ 
+
+
 
 
 var server = restify.createServer();
@@ -16,6 +26,9 @@ var server = restify.createServer();
 server.use(restify.plugins.queryParser({ mapParams: true }));
 server.use(restify.plugins.bodyParser({ mapParams: true }));
 server.use(restify.plugins.acceptParser(server.acceptable));
+server.pre(cors.preflight)
+server.use(cors.actual);
+// server.pre( (req, res, next) => { res.header("Access-Control-Allow-Origin", "*"); res.header("Access-Control-Allow-Headers", "X-Requested-With"); });
 server.use(rjwt(config.jwt).unless({ path: ['/auth'] }));
 
 server.get("/tank/:id", (req, res) => {
@@ -54,10 +67,13 @@ server.post('/auth', (req, res, next) => {
 
     // retrieve issue and expiration times
     let { iat, exp } = jwt.decode(token);
-    res.send({ iat, exp, token });
+    res.send({ code: 0, iat, exp, token });
   }).catch( err => {
-    res.send(err);
-  })
+    res.send( {
+      code: 1,
+      message: err
+    });
+  });
 });
 
 server.get('/user', (req, res, next) => {
