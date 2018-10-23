@@ -14,6 +14,10 @@ var User = sequelize.define('user', {
         type: Sequelize.STRING,
         defaultValue: null
     },
+    role: {
+        type: Sequelize.STRING,
+        defaultValue: null
+    },
     email: {
         type: Sequelize.INTEGER,
         validate: {

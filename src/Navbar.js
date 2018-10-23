@@ -6,7 +6,7 @@ import Routes from './Routes';
 import { Link } from 'react-router-dom';
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import Logs from './logs';
-import Login from './login';
+import Login from './Login';
 
 // const ProgressExampleProgress = () => 
 

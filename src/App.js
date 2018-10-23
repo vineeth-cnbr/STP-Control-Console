@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom'
 import Navbar from './Navbar';
-import Login from './login';
+import Login from './Login';
+import Setup from './Setup';
 import Status from './Status';
 import 'semantic-ui-css/semantic.min.css';
 import './index.css';
@@ -65,7 +66,9 @@ class App extends Component {
           <div>
             <Route exact path="/" auth={this.state.auth} render={props => <Login auth={props.auth} authenticate={this.authenticate} />} />
             <PrivateRoute path="/dashboard" component={Navbar} auth={this.state.auth} />
-            <Route path="/test" component={(props) => <h1>Hello</h1>} />
+            <Route path="/signup" component={Setup} />
+            {/* <Route path="/test" component={(props) => <h1>Hello</h1>} /> */}
+            
             {/* <Navbar /> */}
           </div>
         </Router>

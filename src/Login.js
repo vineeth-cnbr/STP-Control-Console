@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 // import logo from './logo.svg';
 import './App.css';
 import { Message, Select, Button, Form, Grid, Container, Divider } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
 
 class Login extends Component {
@@ -85,10 +85,10 @@ class Login extends Component {
 								<Button type='submit'>Submit</Button>
 							</Form>
 						</div>
-							    <Divider horizontal>Or</Divider>
-								<p>Not a member yet? <a href='/signup'>sign up</a></p>
-							<br />
-							<p><a href='/forgot'>Forgot password?</a></p>							
+						<Divider horizontal>Or</Divider>
+						<p>Not a member yet? <Link to="/signup">sign up</Link></p>
+						<br />
+						<p><a href='/forgot'>Forgot password?</a></p>							
 						</Grid.Column>
 					</Grid.Row>
 					</Grid>
