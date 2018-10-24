@@ -62,6 +62,7 @@ class App extends Component {
   render() {
     return (
       <div>
+      <br /><br />
         <Router>
           <div>
             <Route exact path="/" auth={this.state.auth} render={props => <Login auth={props.auth} authenticate={this.authenticate} />} />

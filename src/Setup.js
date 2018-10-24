@@ -28,8 +28,24 @@ class Setup extends Component {
         super(props);
         this.state = {
             'tanks':1,
+            'tankComponents':[
+                <Tank num={1} />
+            ]
         }
+        this.addtank = this.addtank.bind(this);
     }
+
+    addtank(){
+        var { tankNum, tankComponents } = this.state;
+        this.setState({tanks: tankNum+1, tankComponents: tankComponents.append(<Tank num={tankNum+1}/>)});
+        // console.log(this.refs.newTank.value);
+        console.log(document.getElementById('newTank').append(<Tank />));
+        
+        // console.log(<Tank />);
+        // this.refs.newTank.value.append(<Tank num={this.state.tanks}/>)
+        
+    }
+
     render(){
         return (
             <Container>
@@ -48,10 +64,10 @@ class Setup extends Component {
                                 <input type="number" placeholder="Pincode" pattern="(\d{6})" required />
 
                             </Form.Field>
-                            <div id='tank-division'>
-                                <tank num={this.state.tank}/>
+                            <div ref='newTank' id='newTank'>
+                                
                             </div>
-
+                            <Button onClick = {this.addtank}>Add Tank</Button>
                         </Form>
                     </Grid.Column>
                 </Grid>
@@ -82,9 +98,9 @@ class Tank extends Component{
                 <Select placeholder={'Tank type...'} options={opts} onChange={this.select} required />
             </Form.Field>
             <Form.Field>
-                <Label>Tank {`this.state.num`} Dimensions:</Label>
-                <input type="number" placeholder="height"  name={(event)=> this.setState({ height: event.target.value})} required />
-                <input type="number" placeholder="diameter" name="diameter{`this.state.num`}" required />
+                <Label>Tank {this.state.num} Dimensions:</Label>
+                <input type="number" placeholder="height"  value={(event)=> this.setState({ height: event.target.value})} required />
+                <input type="number" placeholder="diameter" value={(event)=> this.setState({ diameter: event.target.value})} required />
             </Form.Field>
             </div>
 
