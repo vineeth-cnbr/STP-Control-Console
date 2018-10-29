@@ -83,7 +83,7 @@ class App extends Component {
           <div>
             <Route exact path="/" auth={this.state.authenticate} authenticate={this.authenticate} 
                     render={ (props) => { 
-                        const properties = { auth: this.state.auth, authenticate: this.state.authenticate };
+                        const properties = { auth: this.state.auth, authenticate: this.authenticate };
                         return homePageRedirect(properties); 
                         }} />
             <PrivateRoute path="/dashboard" component={ Navbar } auth={ this.state.auth } />

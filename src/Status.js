@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Icon, Image, Menu, Segment, Sidebar, Progress, Grid, Button, Radio } from 'semantic-ui-react'
+import { Loader, Header, Icon, Image, Menu, Segment, Sidebar, Progress, Grid, Button, Radio } from 'semantic-ui-react'
 import axios from 'axios';
 
 axios.defaults.baseURL = 'http://localhost:8080';
@@ -10,7 +10,8 @@ class Status extends React.Component {
         cTankPercent: 0,
         aTankPercent: 0,
         cState: true,
-        aState: true
+        aState: true,
+        loading: true
     }
     aIncrement = () => {
         this.setState({ aTankPercent:  this.state.aTankPercent > 100 ? 0 : this.state.aTankPercent + 20 })
@@ -34,7 +35,7 @@ class Status extends React.Component {
 
         setInterval(
           this.update.bind(this),
-          2000
+          5000
         );
     }
     componentWillUnmount() {
@@ -44,12 +45,15 @@ class Status extends React.Component {
     
 
     update() {
-        axios.get("http://localhost:8080/tank/C101")
+        axios.get("/tank/C101")
                 .then(function (response) {
                     var { id, status, level } = response.data;
                     console.log(id,status,level);
-                    this.setState( {cTankPercent: level });
-                    this.setState( {cState: status });
+                    this.setState( {
+                        cTankPercent: level,
+                        cState: status,
+                        loading: false
+                      });
                   
                 }.bind(this))
                 .catch(function(error){
@@ -70,7 +74,7 @@ class Status extends React.Component {
                 <Grid.Row>
                     <Grid.Column>
                         <h5>Collection Tank Capacity</h5> <p>State: {this.cState} </p><Radio toggle checked={this.state.cState} onChange={this.changeCStatus} />
-                        <Progress percent={this.state.cTankPercent} size='big' progress indicating />
+                        <Progress percent={this.state.cTankPercent} size='big' progress indicating >{ (this.state.loading)? <Loader active inline >Loading</Loader>: ""}</Progress>
                         {/* <Button onClick={this.cIncrement}>Increment</Button> */}
                     </Grid.Column>
                     
