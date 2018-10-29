@@ -63,7 +63,7 @@ class Navbar extends React.Component {
                 
                     <div>
                         
-                        <Route path="/dashboard" component = {Status} />
+                        <Route path="/dashboard" render={ props => <Status auth={this.props.auth} /> } />
                         
                         <Route path="/dashboard/logs" component = {Logs} />
                         {/* </Route> */}

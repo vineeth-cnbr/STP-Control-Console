@@ -4,6 +4,7 @@ import './App.css';
 import { Message, Select, Button, Form, Grid, Container, Divider } from 'semantic-ui-react';
 import { Redirect, Link } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
+import { withCookies } from 'react-cookie';
 
 class Login extends Component {
 	constructor(props) {
@@ -22,6 +23,12 @@ class Login extends Component {
 		this.pwhandle = this.pwhandle.bind(this);
 		this.select = this.select.bind(this);
 	}
+	componentWillMount() {
+		this.setState({
+			loggedIn: this.props.auth.isAuthenticated
+		})
+
+	}
 	namehandle(event) {
 		console.log(this.state.name);
 		this.setState({ name: event.target.value });
@@ -35,14 +42,17 @@ class Login extends Component {
 	}
 	handleSubmit(event) {
 		this.props.authenticate(this.state.name, this.state.pw).then(data => {
-			console.log(data.code,data.message);
-			if(data.code == 1 ) {
+			const { code, message, iat, exp, token } = data;
+			if(code == 1 ) {
 				this.setState({
 					isError: true,
-					errMessage: data.message
+					errMessage: message
 				})
-			}else if(data.code == 0) {
-				console.log("set")
+			}else if(code == 0) {
+				console.log("auth", token, iat, exp);
+				const { cookies } = this.props;
+				cookies.set('token', token, { path: "/" })
+				// axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 				this.setState({
 					loggedIn: true
 				})
@@ -54,10 +64,11 @@ class Login extends Component {
 	render() {
 		var { loggedIn } = this.state;
 		console.log("inside render", loggedIn)
+		// console.log("Cookies ", this.props.allCookies);
 		if(!loggedIn) {
 		return (
 			<Container>
-				
+					<br /><br />
 					<Grid centered columns={3} verticalAlign='middle'>
 					<Grid.Row />
 					<Grid.Row >
@@ -127,4 +138,4 @@ var opts = [
 
 
 
-export default Login
+export default withCookies(Login);

@@ -14,15 +14,13 @@ const corsMiddleware = require('restify-cors-middleware')
  
 const cors = corsMiddleware({
   preflightMaxAge: 5, //Optional
-  origins: ['http://localhost:3000', 'http://localhost:8080'],
+  allowHeaders: ['Authorization'],
 })
  
 
-
-
-
 var server = restify.createServer();
 
+server.pre((req, res, next) => { console.log("hey", req.headers.authorization); next()})
 server.use(restify.plugins.queryParser({ mapParams: true }));
 server.use(restify.plugins.bodyParser({ mapParams: true }));
 server.use(restify.plugins.acceptParser(server.acceptable));
@@ -61,7 +59,7 @@ server.post('/auth', (req, res, next) => {
   console.log(username,password)
   auth.authenticate(username, password).then(data => {
     console.log(data);
-    let token = jwt.sign(data, config.jwt.secret, {
+    let token = jwt.sign(data , config.jwt.secret, {
       expiresIn: '15d' // token expires in 15 days
     });
 
@@ -77,8 +75,18 @@ server.post('/auth', (req, res, next) => {
 });
 
 server.get('/user', (req, res, next) => {
-  res.send(req.user);
+  console.log("autho",req.headers.authorization);
+  if(req.user) {
+    res.send({ code: 0, user: req.user });
+  }else {
+    res.send({ code: 1, message: "You are not authenticated." })
+  }
 });
+
+server.post("/isAuthenticated", (req, res) => {
+  const { token } = req.body;
+  res.send()
+})
 
 
 server.listen(8080, function () {

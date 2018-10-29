@@ -1,10 +1,14 @@
 import React from 'react';
 import { Header, Icon, Image, Menu, Segment, Sidebar, Progress, Grid, Button, Radio } from 'semantic-ui-react'
-import axios from 'axios'
+import axios from 'axios';
+
+axios.defaults.baseURL = 'http://localhost:8080';
+
+
 class Status extends React.Component {
     state = {
-        cTankPercent: 40,
-        aTankPercent: 70,
+        cTankPercent: 0,
+        aTankPercent: 0,
         cState: true,
         aState: true
     }
@@ -17,14 +21,17 @@ class Status extends React.Component {
 
     changeCStatus = (event) => {
         console.log(event);
-        axios.post("http://localhost:8080/tank/C101", { status: event.target.value })
+        axios.post("/tank/C101", { status: event.target.value })
             .then((respose)=> {
                 console.log(respose.data[0])
             })
     }
 
-    componentDidMount() {
-        console.log("hi")
+    componentWillMount() {
+        let { token } = this.props.auth;
+        // console.log(this.props);
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+
         setInterval(
           this.update.bind(this),
           2000
@@ -32,13 +39,14 @@ class Status extends React.Component {
     }
     componentWillUnmount() {
         clearInterval(this.timerID);
+
     }
     
 
     update() {
         axios.get("http://localhost:8080/tank/C101")
                 .then(function (response) {
-                    var { id, status, level } = response.data[0];
+                    var { id, status, level } = response.data;
                     console.log(id,status,level);
                     this.setState( {cTankPercent: level });
                     this.setState( {cState: status });

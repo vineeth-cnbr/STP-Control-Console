@@ -7,6 +7,7 @@ import Status from './Status';
 import 'semantic-ui-css/semantic.min.css';
 import './index.css';
 import axios from 'axios';
+import { withCookies, Cookies } from 'react-cookie';
 
 axios.defaults.baseURL = 'http://localhost:8080';
 
@@ -14,20 +15,35 @@ class App extends Component {
   constructor() {
     super();
     this.authenticate = this.authenticate.bind(this);
+    this.state = {
+      auth: {
+        isAuthenticated: false
+      }
+      
+    }
     
   }
 
   componentWillMount() {
+    const { cookies } = this.props;
+    const token = cookies.get('token')
+    console.log("Token", token);
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 
-    axios.post("/user")
-    this.setState({
-      test: true,
-      auth: {
-        token: null,
-        isAuthenticated: false,
-      }
-
-    });
+    axios.get("/user")
+      .then( data => {
+        console.log(data);
+        this.setState({
+          auth: {
+            token: token,
+            isAuthenticated: true,
+          }
+        }, () => {
+          console.log("The user is logged in", this.state.auth.isAuthenticated)
+        })
+          
+      })
+      .catch( err => console.log(err));
 
     
 
@@ -48,7 +64,7 @@ class App extends Component {
               isAuthenticated: true
             }
           });
-          console.log(this.state.auth.isAuthenticated)
+          console.log(" The user is logged in: ",this.state.auth.isAuthenticated)
         }
         console.log(true)
         resolve(data);
@@ -61,12 +77,16 @@ class App extends Component {
 
   render() {
     return (
-      <div>
-      <br /><br />
+      <div>    
+        
         <Router>
           <div>
-            <Route exact path="/" auth={this.state.auth} render={props => <Login auth={props.auth} authenticate={this.authenticate} />} />
-            <PrivateRoute path="/dashboard" component={Navbar} auth={this.state.auth} />
+            <Route exact path="/" auth={this.state.authenticate} authenticate={this.authenticate} 
+                    render={ (props) => { 
+                        const properties = { auth: this.state.auth, authenticate: this.state.authenticate };
+                        return homePageRedirect(properties); 
+                        }} />
+            <PrivateRoute path="/dashboard" component={ Navbar } auth={ this.state.auth } />
             <Route path="/signup" component={Setup} />
             {/* <Route path="/test" component={(props) => <h1>Hello</h1>} /> */}
             
@@ -78,17 +98,6 @@ class App extends Component {
   }
 }
 
-const fakeAuth = {
-  isAuthenticated: false,
-  authenticate(cb) {
-    this.isAuthenticated = true;
-    setTimeout(cb, 100); // fake async
-  },
-  signout(cb) {
-    this.isAuthenticated = false;
-    setTimeout(cb, 100);
-  }
-};
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const auth = rest.auth;
@@ -97,7 +106,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
       {...rest}
       render={props =>
         auth.isAuthenticated ? (
-          <Component {...props} />
+          <Component auth={auth} {...props} />
         ) : (
             <Redirect
               to={{
@@ -110,4 +119,18 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     />
   )
 }
-export default App;
+
+const homePageRedirect = (props) => {
+  // console.log("auth", props.auth.isAuthenticated)
+  if(props.auth.isAuthenticated) {
+    return (
+      <Redirect to="/dashboard" />
+    )
+  }else {
+
+    return (
+      <Login auth={props.auth} authenticate={props.authenticate} />
+    )
+  }
+}
+export default withCookies(App);
