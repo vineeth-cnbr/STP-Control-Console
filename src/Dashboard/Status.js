@@ -35,7 +35,7 @@ class Status extends React.Component {
 
         setInterval(
           this.update.bind(this),
-          5000
+          60000
         );
     }
     componentWillUnmount() {

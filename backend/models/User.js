@@ -1,5 +1,6 @@
 var Sequelize = require('sequelize');
 var sequelize = new Sequelize('stp', 'root', 'root', { dialect: 'mysql'});
+var Stp = require('./Stp');
 
 var User = sequelize.define('user', {
     username: {
@@ -34,7 +35,7 @@ var User = sequelize.define('user', {
     }
   });
   
-  
+  User.belongsTo(Stp);
   User.sync();
 
 //   User.create({username: 'vineeth-cnbr'}).then( res => console.log );

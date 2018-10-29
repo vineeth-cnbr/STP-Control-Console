@@ -2,6 +2,7 @@ const restify = require('restify'),
   Sequelize = require('sequelize'),
   config = require('./tools/config'),
   Tank = require('./models/Tank'),
+  Stp = require('./models/Stp')
   User = require('./models/User'),
   auth = require('./tools/auth'),
   rjwt = require('restify-jwt-community'),
@@ -13,7 +14,6 @@ const restify = require('restify'),
 const corsMiddleware = require('restify-cors-middleware')
  
 const cors = corsMiddleware({
-  preflightMaxAge: 5, //Optional
   allowHeaders: ['Authorization'],
 })
  
