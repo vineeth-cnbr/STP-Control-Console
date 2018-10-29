@@ -4,6 +4,7 @@ import Navbar from './Dashboard/Navbar';
 import Login from './Register/Login';
 import Setup from './Register/Setup';
 import Status from './Dashboard/Status';
+import Logs from './Dashboard/logs'
 import 'semantic-ui-css/semantic.min.css';
 import './index.css';
 import axios from 'axios';
@@ -106,8 +107,8 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
       {...rest}
       render={props =>
         auth.isAuthenticated ? (
-          <Component auth={auth} {...props} />
-        ) : (
+                     <Component auth={auth} {...props} />
+                         ) : (
             <Redirect
               to={{
                 pathname: "/",
@@ -116,7 +117,10 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
             />
           )
       }
-    />
+    >
+      {/* <Route path="/" render={ props => <Status auth={this.props.auth} /> } />            
+      <Route path="/logs" component = {Logs} /> */}
+    </Route>
   )
 }
 

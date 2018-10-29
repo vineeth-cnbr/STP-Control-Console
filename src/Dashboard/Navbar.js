@@ -2,6 +2,7 @@ import React from 'react'
 import { Header, Icon, Image, Menu, Segment, Sidebar } from 'semantic-ui-react'
 import { Progress } from 'semantic-ui-react'
 import Status from './Status';
+import Sidenav from './Sidenav';
 import { Link } from 'react-router-dom';
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import Logs from './logs';
@@ -33,38 +34,10 @@ class Navbar extends React.Component {
             </div>
             
             <Sidebar.Pushable as={Segment}>
-                <Sidebar as={Menu} animation='overlay' icon='labeled' vertical
-                visible={visible}
-                inverted width='thin'>
-                <br></br>
-                
-                <Menu.Item as='a' height='200px'>
-                    <Image src='img/mstile-310x150.png' size='mini' width="100%" circular centered/>
-                </Menu.Item>
-                
-                <Link to="/dashboard">
-                    <Menu.Item as='a'>
-                        <Icon name='newspaper' />
-                        Status
-                    </Menu.Item>
-                </Link>
-                <Link to="/dashboard/logs">
-                    <Menu.Item as='a'>
-                        <Icon name='file alternate outline' />
-                        Logs
-                    </Menu.Item>
-                </Link>
-                <Menu.Item as='a'>
-                    <Icon name='file alternate outline' />
-                    Logs
-                </Menu.Item>
-                </Sidebar>
-                
+                <Sidenav visible={this.state.visible} />
                     <div>
-                        
-                        <Route path="/" render={ props => <Status auth={this.props.auth} /> } />
-                        
-                        <Route path="/logs" component = {Logs} />
+                        <Route exact path="/dashboard" render={ props => <Status auth={this.props.auth} /> } />
+                        <Route path="/dashboard/logs" component = {Logs} />
                         {/* </Route> */}
                     </div>
                 
