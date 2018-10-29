@@ -2,11 +2,10 @@ import React from 'react'
 import { Header, Icon, Image, Menu, Segment, Sidebar } from 'semantic-ui-react'
 import { Progress } from 'semantic-ui-react'
 import Status from './Status';
-import Routes from './Routes';
 import { Link } from 'react-router-dom';
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import Logs from './logs';
-import Login from './Login';
+import Login from '../Register/Login';
 
 // const ProgressExampleProgress = () => 
 
@@ -63,9 +62,9 @@ class Navbar extends React.Component {
                 
                     <div>
                         
-                        <Route path="/dashboard" render={ props => <Status auth={this.props.auth} /> } />
+                        <Route path="/" render={ props => <Status auth={this.props.auth} /> } />
                         
-                        <Route path="/dashboard/logs" component = {Logs} />
+                        <Route path="/logs" component = {Logs} />
                         {/* </Route> */}
                     </div>
                 

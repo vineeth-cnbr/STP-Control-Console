@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom'
-import Navbar from './Navbar';
-import Login from './Login';
-import Setup from './Setup';
-import Status from './Status';
+import Navbar from './Dashboard/Navbar';
+import Login from './Register/Login';
+import Setup from './Register/Setup';
+import Status from './Dashboard/Status';
 import 'semantic-ui-css/semantic.min.css';
 import './index.css';
 import axios from 'axios';

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // import logo from './logo.svg';
-import './App.css';
+import '../App.css';
 import { Select, Button, Form, Grid, Container, Label } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // import logo from './logo.svg';
-import './App.css';
+import '../App.css';
 import { Message, Select, Button, Form, Grid, Container, Divider } from 'semantic-ui-react';
 import { Redirect, Link } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
