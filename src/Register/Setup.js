@@ -42,13 +42,13 @@ class Setup extends Component {
         heights.push(0);
         lengths.push(0);
         breadths.push(0);
-        tankComponents.push( <Tank num={tanks + 1 } addAtt={this.addAttribute}  />);
+        tankComponents.push( <Tank num={tanks + 1 } addAtt={this.addAttribute}  key = {(tanks + 1).toString()} />);
         this.setState({tanks: tanks+1, tankComponents: tankComponents, lengths: lengths, breadths: breadths, heights: heights});
         tankComponents.map(tank =>{return tank})
     }
 
     addAttribute(tank, attribute, value){
-        let {heights, lengths, breadths} = this.state
+        let {heights, lengths, breadths,tankTypes} = this.state
         switch(attribute){
             case 'height':{
                 heights[tank-1] = value;
@@ -62,15 +62,18 @@ class Setup extends Component {
                 breadths[tank-1] = value;
                 break;
             }
+            case 'select':{
+                tankTypes[tank-1] = value;
+            }
         }
-        console.log(this.state.heights);
+        console.log(this.state.tankTypes);
         this.setState({heights: heights, lengths: lengths, breadths: breadths});
     }
     render(){
         return (
             <Container>
                 <div>
-                <Grid centered columns={3} verticalAlign='middle'>
+                <Grid centered columns={3} verticalAlign='middle' >
                     <Grid.Column>
                         <Form error>
                             <Form.Field>
@@ -91,6 +94,7 @@ class Setup extends Component {
                             </div>
                             <br />
                             <Button onClick = {this.addtank}>Add Tank</Button>
+                            <Button  onClick = {null}>Submit</Button>
                         </Form>
                     </Grid.Column>
                 </Grid>
@@ -114,32 +118,35 @@ class Tank extends Component{
         this.changeBreadth = this.changeBreadth.bind(this);
         this.changeHeight = this.changeHeight.bind(this);
         this.changeLength = this.changeLength.bind(this);
+        
     }
 
     callParentFunc(tankNum, attribute, value){
-        this.props.addAtt(tankNum, attribute, value)
+        this.props.addAtt(tankNum, attribute, value);
     }
 
     changeHeight(event){
         this.setState({height: event.target.value}, ()=>{
-            this.callParentFunc(this.state.num, 'height', this.state.height)
+            this.callParentFunc(this.state.num, 'height', this.state.height);
         });
     }
 
     changeBreadth(event){
         this.setState({breadth: event.target.value}, ()=>{
-            this.callParentFunc(this.state.num, 'breadth', this.state.breadth)
+            this.callParentFunc(this.state.num, 'breadth', this.state.breadth);
         });
     }
 
     changeLength(event){
         this.setState({length: event.target.value}, ()=>{
-            this.callParentFunc(this.state.num, 'length', this.state.length)
+            this.callParentFunc(this.state.num, 'length', this.state.length);
         });
     }
 
     select(event) {
-		this.setState({ tank_type : event.target.value });
+		this.setState({ tank_type : event.target.value }, ()=>{
+            this.callParentFunc(this.state.num, 'select', this.state.tank_type);
+        });
 	}
     render(){
         return (

@@ -13,7 +13,7 @@ var User = sequelize.define('user', {
     },
     password: {
         type: Sequelize.STRING,
-        defaultValue: null
+        notNull: true
     },
     role: {
         type: Sequelize.STRING,
@@ -38,6 +38,17 @@ var User = sequelize.define('user', {
   User.belongsTo(Stp);
   User.sync();
 
-//   User.create({username: 'vineeth-cnbr'}).then( res => console.log );
-
+  const addUser = async () => {
+    try {
+        let stp = await Stp.findById('STP101');
+        let user = await User.create({username: 'vineeth-cnbr'});
+        user.setStp(stp);
+    }catch(err) {
+        console.log(err);
+    }
+  }
+  console.log("Add user");
+  
+//   addUser();
+  
   module.exports = User;

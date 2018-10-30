@@ -21,6 +21,8 @@ class Navbar extends React.Component {
     handleSidebarHide = () => this.setState({ visible: false })
 
     render() {
+        const { signout } = this.props.auth;
+        console.log(signout)
         const isAuthenticated = false;
         const { visible } = this.state
         return (
@@ -34,7 +36,7 @@ class Navbar extends React.Component {
             </div>
             
             <Sidebar.Pushable as={Segment}>
-                <Sidenav visible={this.state.visible} />
+                <Sidenav visible={this.state.visible} signout={signout} />
                     <div>
                         <Route exact path="/dashboard" render={ props => <Status auth={this.props.auth} /> } />
                         <Route path="/dashboard/logs" component = {Logs} />

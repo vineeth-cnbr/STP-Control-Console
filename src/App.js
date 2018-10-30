@@ -15,13 +15,17 @@ axios.defaults.baseURL = 'http://localhost:8080';
 class App extends Component {
   constructor() {
     super();
-    this.authenticate = this.authenticate.bind(this);
     this.state = {
       auth: {
-        isAuthenticated: false
+        isAuthenticated: false,
+        signout: this.signout
       }
       
     }
+
+    
+    this.authenticate = this.authenticate.bind(this);
+    this.signout = this.signout.bind(this);
     
   }
 
@@ -38,6 +42,7 @@ class App extends Component {
           auth: {
             token: token,
             isAuthenticated: true,
+            signout: this.signout
           }
         }, () => {
           console.log("The user is logged in", this.state.auth.isAuthenticated)
@@ -74,6 +79,17 @@ class App extends Component {
       })
     })
       
+  }
+
+  signout() {
+    let { cookies } = this.props;
+    cookies.remove('token');
+    this.setState ( {
+      auth: {
+        token: '',
+        isAuthenticated: false
+      }
+    })
   }
 
   render() {

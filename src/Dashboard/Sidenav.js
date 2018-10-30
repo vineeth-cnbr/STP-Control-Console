@@ -22,12 +22,12 @@ class Sidenav extends Component {
                     <Link to="/dashboard/logs">
                         <Menu.Item as='a'>
                             <Icon name='file alternate outline' />
-                            Logs
+                            Alerts
                         </Menu.Item>
                     </Link>
-                    <Menu.Item as='a'>
-                        <Icon name='file alternate outline' />
-                        Logs
+                    <Menu.Item as='a' onClick={this.props.signout()}>
+                        <Icon name='pointing left' />
+                        Signout
                     </Menu.Item>
                 </Sidebar>
         )
