@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom
 import Navbar from './Dashboard/Navbar';
 import Login from './Register/Login';
 import Setup from './Register/Setup';
+import Signup from './Register/Signup';
 import Status from './Dashboard/Status';
 import Logs from './Dashboard/logs'
 import 'semantic-ui-css/semantic.min.css';
@@ -104,7 +105,10 @@ class App extends Component {
                         return homePageRedirect(properties); 
                         }} />
             <PrivateRoute path="/dashboard" component={ Navbar } auth={ this.state.auth } />
-            <Route path="/signup" component={Setup} />
+            <Route path="/setup" component={Setup} />
+            <Route path="/signup" component={Signup} />
+
+
             {/* <Route path="/test" component={(props) => <h1>Hello</h1>} /> */}
             
             {/* <Navbar /> */}
