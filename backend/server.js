@@ -28,7 +28,7 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.pre(cors.preflight)
 server.use(cors.actual);
 // server.pre( (req, res, next) => { res.header("Access-Control-Allow-Origin", "*"); res.header("Access-Control-Allow-Headers", "X-Requested-With"); });
-server.use(rjwt(config.jwt).unless({ path: ['/auth'] }));
+// server.use(rjwt(config.jwt).unless({ path: ['/auth'] }));
 
 server.get("/tank/:id", (req, res) => {
   console.log("GET TANK ID");
@@ -74,6 +74,20 @@ server.post('/auth', (req, res, next) => {
     });
   });
 });
+
+//for android app 
+server.post("/login", (req, res) => {
+  let { username, password } = req.body;
+  console.log(username,password)
+  auth.authenticate(username, password)
+    .then(user => {
+      res.send(user)
+    })
+    .catch(err => {
+      res.send(err);
+    })
+
+})
 
 server.get('/user', (req, res, next) => {
   console.log("autho",req.headers.authorization);
