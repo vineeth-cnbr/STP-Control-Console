@@ -25,7 +25,7 @@ class Sidenav extends Component {
                             Alerts
                         </Menu.Item>
                     </Link>
-                    <Menu.Item as='a' onClick={this.props.signout()}>
+                    <Menu.Item as='a' onClick={this.props.signout}>
                         <Icon name='pointing left' />
                         Signout
                     </Menu.Item>

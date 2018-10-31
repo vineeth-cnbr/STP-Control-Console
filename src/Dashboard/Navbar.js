@@ -22,7 +22,7 @@ class Navbar extends React.Component {
 
     render() {
         const { signout } = this.props.auth;
-        console.log(signout)
+        // console.log(signout)
         const isAuthenticated = false;
         const { visible } = this.state
         return (

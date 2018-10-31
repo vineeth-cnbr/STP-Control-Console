@@ -19,7 +19,8 @@ class App extends Component {
     this.state = {
       auth: {
         isAuthenticated: false,
-        signout: this.signout
+        signout: this.signout,
+        user: {}
       }
       
     }
@@ -43,7 +44,8 @@ class App extends Component {
           auth: {
             token: token,
             isAuthenticated: true,
-            signout: this.signout
+            signout: this.signout,
+            user: data.user
           }
         }, () => {
           console.log("The user is logged in", this.state.auth.isAuthenticated)
@@ -73,7 +75,6 @@ class App extends Component {
           });
           console.log(" The user is logged in: ",this.state.auth.isAuthenticated)
         }
-        console.log(true)
         resolve(data);
       }).catch(data => {
         console.log(data);

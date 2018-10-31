@@ -23,3 +23,17 @@ exports.authenticate = (username, password) => {
             })
     })
 }
+
+exports.signup = (user) => {
+    const { name, username, password, email, role, phone } = user;
+    return new Promise((resolve, reject) => {
+        User.create({ username, name, password, email, role, phone })
+            .then( user => {
+                console.log(user);
+            })
+            .catch( err => {
+                console.log(err);
+            })
+    })
+
+}

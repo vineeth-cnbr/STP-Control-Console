@@ -89,6 +89,18 @@ server.post("/login", (req, res) => {
 
 })
 
+server.post("/signup", (req, res) => {
+  var userBody = req.body;
+  auth.signup(userBody)
+      .then( user => {
+        res.send(user);
+      })
+      .catch( err => {
+        res.send(err);
+      })
+
+})
+
 server.get('/user', (req, res, next) => {
   console.log("autho",req.headers.authorization);
   if(req.user) {
