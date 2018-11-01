@@ -28,7 +28,7 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.pre(cors.preflight)
 server.use(cors.actual);
 // server.pre( (req, res, next) => { res.header("Access-Control-Allow-Origin", "*"); res.header("Access-Control-Allow-Headers", "X-Requested-With"); });
-server.use(rjwt(config.jwt  ).unless({ path: ['/auth', '/signup'] }));
+server.use(rjwt(config.jwt  ).unless({ path: ['/auth', '/signup', '/stp/add'] }));
 
 server.get("/tank/:id", (req, res) => {
   console.log("GET TANK ID");
@@ -108,14 +108,55 @@ server.post("/signup", (req, res) => {
 
 })
 
-server.get('/user', (req, res, next) => {
+server.get('/user', async (req, res, next) => {
   console.log("autho", req.user);
-  if(req.user) {
-    res.send({ code: 0, user: req.user });
-  }else {
+  try {
+    let user = await User.findByPk(req.user.username)
+    user = user['dataValues'];
+    if(user.stpId!=null) {
+      var stp = await Stp.findByPk(user.stpId);
+      stp = stp['dataValues'];
+      let tanks = await Tank.findAll({ where: { stpId: user.stpId }});
+      var newtanks = tanks.map( (tank) => {
+        return tank['dataValues'];
+      })
+      console.log(newtanks);
+    }
+    res.send({ code: 0, user, stp, tanks: newtanks });
+  }catch(err) {
+    console.log(err);
     res.send({ code: 1, message: "You are not authenticated." })
   }
 });
+
+server.post('/stp/add', async (req, res) => {
+  try {
+    const { name, street, state, pincode, tanks, tankObjects, username  } = req.body;
+    console.log("username", username);
+    let userInstance = await User.findByPk(username);
+    let stpCount = await Stp.count();
+    let id = 'STP' + String(Number(100+stpCount+1));
+    let stp = await Stp.create({ id, name, street, state, pincode });
+    userInstance.setStp(stp)
+    let tankCount = await Tank.count();
+    let tankResults = tankObjects.map(async (tank, i) => {
+      let { tankType, length, breadth, height } = tank;
+      let id = tankType + String(tankCount + i+1)
+      let tankInstance = await Tank.create({ id, tankType, length, breadth, height, level: 0, status: false });
+      tankInstance.setStp(stp);
+      return tankInstance['dataValues']
+
+    });
+    console.log(stp['dataValues']);
+    res.send({
+      stp: stp['dataValues'],
+      tankResults
+    });
+  }catch(err) {
+    console.log(err);
+    res.send(err);
+  }
+})
 
 server.post("/isAuthenticated", (req, res) => {
   const { token } = req.body;

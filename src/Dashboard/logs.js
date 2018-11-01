@@ -12,7 +12,7 @@ export default () => {
         <Grid columns={2}>
             <Grid.Row>
                 <Grid.Column>
-                    <h1>Logs</h1>
+                    <h1>Alerts</h1>
                 </Grid.Column>
                 </Grid.Row>
                 

@@ -52,7 +52,7 @@ class Login extends Component {
 			}else if(code == 0) {
 				console.log("auth", token, iat, exp);
 				const { cookies } = this.props;
-				cookies.set('token', token, { path: "/" })
+				cookies.set('token', token)
 				// axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 				this.setState({
 					loggedIn: true
@@ -90,17 +90,17 @@ class Login extends Component {
 									<label>Password</label>
 									<input placeholder='Password' type='password' onChange={this.pwhandle} required />
 								</Form.Field>
-								<Form.Field>
+								{/* <Form.Field>
 									<Select placeholder='Select your role' options={opts} onChange={this.select} required />
-								</Form.Field>
+								</Form.Field> */}
 							    { this.state.isError? <Message error header='Error' content={this.state.errMessage} /> :<br></br> }
-								<Button type='submit'>Submit</Button>
+								<Button primary type='submit'>Submit</Button>
 							</Form>
 						</div>
 						<Divider horizontal>Or</Divider>
 						<p>Not a member yet? <Link to="/signup">sign up</Link></p>
 						<br />
-						<p><a href='/forgot'>Forgot password?</a></p>							
+						{/* <p><a href='/forgot'>Forgot password?</a></p>							 */}
 						</Grid.Column>
 					</Grid.Row>
 					</Grid>
@@ -108,7 +108,6 @@ class Login extends Component {
 
 		);
 		}else {
-			console.log("inside redi")
 			return (
 				<Redirect to="/dashboard" />
 			)

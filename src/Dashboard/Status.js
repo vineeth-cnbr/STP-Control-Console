@@ -6,36 +6,36 @@ axios.defaults.baseURL = 'http://localhost:8080';
 
 
 class Status extends React.Component {
-    state = {
-        cTankPercent: 0,
-        aTankPercent: 0,
-        cState: true,
-        aState: true,
-        loading: true
-    }
-    aIncrement = () => {
-        this.setState({ aTankPercent:  this.state.aTankPercent > 100 ? 0 : this.state.aTankPercent + 20 })
-    }
-    cIncrement = () => {
-        this.setState({ cTankPercent: this.state.cTankPercent > 100 ? 0 : this.state.cTankPercent + 20 })
+    constructor(props) {
+        super(props)
+        console.log("props", props)
+        this.setState({
+            stp: this.props.auth.stp,
+            tanks: this.props.auth.tanks,
+        });
+        this.update = this.update.bind(this);
+        console.log("FIRST");
     }
 
-    changeCStatus = (event) => {
-        console.log(event);
-        axios.post("/tank/C101", { status: event.target.value })
-            .then((respose)=> {
-                console.log(respose.data[0])
-            })
-    }
+    // changeCStatus = (event) => {
+    //     console.log(event);
+    //     axios.post("/tank/C101", { status: event.target.value })
+    //         .then((respose)=> {
+    //             console.log(respose.data[0])
+    //         })
+    // }
 
     componentWillMount() {
+        this.setState({
+            stp: this.props.auth.stp,
+            tanks: this.props.auth.tanks,
+        });
         let { token } = this.props.auth;
-        // console.log(this.props);
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 
         setInterval(
-          this.update.bind(this),
-          60000
+          this.update,
+          6000
         );
     }
     componentWillUnmount() {
@@ -45,23 +45,40 @@ class Status extends React.Component {
     
 
     update() {
-        axios.get("/tank/C101")
-                .then(function (response) {
-                    var { id, status, level } = response.data;
-                    console.log(id,status,level);
-                    this.setState( {
-                        cTankPercent: level,
-                        cState: status,
-                        loading: false
-                      });
+
+        let newTanks = this.props.auth.tanks.map( async (tank,i) => {
+            let response = await axios.get("/tank/" + tank.id);
+            let data = response.data;
+            let newTank = Object.assign(tank, data)
+            console.log(newTank);
+            return newTank;
+        })
+        console.log("update", newTanks);
+        this.setState({
+            tanks: newTanks
+        })
+        
+        
+        // axios.get("/tank/C101")
+        //         .then(function (response) {
+        //             var { id, status, level } = response.data;
+        //             console.log(id,status,level);
+        //             this.setState( {
+        //                 cTankPercent: level,
+        //                 cState: status,
+        //                 loading: false
+        //               });
                   
-                }.bind(this))
-                .catch(function(error){
-                    console.log("Not able to fetch API cuz", error);
-                }.bind(this))
+        //         }.bind(this))
+        //         .catch(function(error){
+        //             console.log("Not able to fetch API cuz", error);
+        //         }.bind(this))
 
     }
     render() {
+        // console.log("status",this.props.auth)
+
+        const { tanks } = this.state;
         return (
             <Sidebar.Pusher style={{ 'paddingLeft': '150px','paddingTop': '0px','height': '1000px'}}>
             <Segment basic>
@@ -72,18 +89,20 @@ class Status extends React.Component {
             </Header>
             <Grid columns={2}>
                 <Grid.Row>
-                    <Grid.Column>
+                    {/* <Grid.Column>
                         <h5>Collection Tank Capacity</h5> <p>State: {this.cState} </p><Radio toggle checked={this.state.cState} onChange={this.changeCStatus} />
-                        <Progress percent={this.state.cTankPercent} size='big' progress indicating >{ (this.state.loading)? <Loader active inline >Loading</Loader>: ""}</Progress>
+                        <Progress percent={this.state.cTankPercent} size='big' progress indicating >{ (this.state.loading)? <Loader active inline >Loading</Loader>: ""}</Progress> */}
                         {/* <Button onClick={this.cIncrement}>Increment</Button> */}
-                    </Grid.Column>
-                    
-                    <Grid.Column>
-                        <h5>Aeration Tank Capacity</h5>  <p>State: {this.cState} </p><Radio toggle onChange={this.changeAStatus} />
-                        <Progress percent={this.state.aTankPercent} size='big' progress indicating  />
-                        {/* <Button onClick={this.aIncrement}>Increment</Button> */}
-                    </Grid.Column>
+                    {/* </Grid.Column> */}
                 {/* <Image src='/images/wireframe/paragraph.png' /> */}
+                        { tanks.map( (tank,i) => {
+                            return (
+                                <Grid.Column>
+                                    <h5>Tank {i}</h5>
+                                    <Progress percent = {tank.level} size='big' progress indicating ></Progress>
+                                </Grid.Column>
+                            )
+                        })}
                 </Grid.Row>
             </Grid>
             </Segment>

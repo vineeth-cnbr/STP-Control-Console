@@ -1,3 +1,4 @@
+import './misc/App.css';
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom'
 import Navbar from './Dashboard/Navbar';
@@ -50,13 +51,15 @@ class App extends Component {
             token: token,
             isAuthenticated: true,
             signout: this.signout,
-            user: data.user
+			user: data.user,
+			stp: data.stp,
+			tanks: data.tanks
           }
           
         }, () => {
           console.log("The user is logged in", this.state.auth.isAuthenticated)
         })
-        cookies.set('user', data.user);
+        cookies.set('user', data);
         console.log("user", cookies.get('user'));
       })
       .catch( err => console.log(err));
@@ -66,6 +69,7 @@ class App extends Component {
   }
 
   authenticate(username, password) {
+	const { cookies } = this.props;
     return new Promise( (resolve, reject) => {
       axios.post('/auth', {
         username,
@@ -77,11 +81,13 @@ class App extends Component {
           this.setState({
             auth: {
               token: data.token,
-              isAuthenticated: true
+			  isAuthenticated: true,
+			  user: data.user
             }
           });
           console.log(" The user is logged in: ",this.state.auth.isAuthenticated)
-        }
+		}
+		cookies.set('user', data.user)
         resolve(data);
       }).catch(data => {
         console.log(data);
@@ -120,7 +126,7 @@ class App extends Component {
 		  }else {
 			  reject(err)
 		  }
-          console.log(data);
+        //   console.log(data);
 
       }).catch( err=> {
 		console.log(err);

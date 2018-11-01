@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 // import logo from './logo.svg';
-// import './App.css';
-import { Select, Button, Form, Grid, Container } from 'semantic-ui-react';
+import '../misc/App.css';
+import { Select, Button, Form, Grid, Container,Sidebar, Segment, Input } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
+import axios from 'axios';
+import { withCookies } from 'react-cookie'
+import { Redirect } from 'react-router';
 
 const opts = [
     {
@@ -26,12 +29,12 @@ class Setup extends Component {
     constructor(props){
         super(props);
         this.state = {
-            'name':'',
-            'street':'',
-            'state':'',
-            'pincode':'',
-            'tanks': 0,
-            'tankComponents':[], 
+            name:'',
+            street:'',
+            state:'',
+            pincode:'',
+            tanks: 0,
+            tankComponents:[], 
             heights: [],
             breadths: [],
             lengths: [],
@@ -40,6 +43,7 @@ class Setup extends Component {
         this.addtank = this.addtank.bind(this);
         this.addAttribute = this.addAttribute.bind(this);
         this.removetank = this.removetank.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     addtank(){
@@ -88,46 +92,91 @@ class Setup extends Component {
                 tankTypes[tank-1] = value;
             }
         }
-        console.log(this.state.tankTypes);
+        console.log(this.state.tanks);
         this.setState({heights: heights, lengths: lengths, breadths: breadths});
     }
-    render(){
-        return (
-            <Container>
-                <div>
-                <Grid coloumns={12} verticalAlign='middle' >
-                <Grid.Row centered> 
-                    <Grid.Column width={6}>
-                        <Form error>
-                            <Form.Field>
-                                <label>Name: </label>
-                                <input type="text" placeholder="Name" onChange={(e)=>{this.setState({name:e.target.value})}} pattern="(\D(\w+\s?)+)" required />
-                            </Form.Field>
-                            <Form.Field>
-                                <label>Address: </label>
-                                <input type="text" placeholder="Street/Locality" onChange={(e)=>{this.setState({street:e.target.value})}} pattern="(\D(\w+\s?)+)" required />
-                                <input type="text" placeholder="District/State" onChange={(e)=>{this.setState({state:e.target.value})}} pattern="(\D(\w+\s?)+)" required />
-                                <input type="number" placeholder="Pincode" onChange={(e)=>{this.setState({pincode:e.target.value})}} pattern="(\d{6})" required />
 
-                            </Form.Field>
-                            
-                            <Button onClick = {this.addtank}>Add Tank</Button>
-                            <Button onClick = {this.removetank}>Remove Tank</Button>
-                            <Button  onClick = {null}>Submit</Button>
-                        </Form>
-                        </Grid.Column>
-                        
-                        </Grid.Row>
-                        <Grid.Row centered column={12} divided>
-                            {this.state.tankComponents.map(tankComp=>{
-                                return tankComp;
-                            })}
-                        </Grid.Row>
+    handleSubmit() {
+        var { tanks, name, street, state, pincode }  = this.state;
+        var { cookies } = this.props;
+        var { username } = this.props.user;
+        var tankObjects = this.state.heights.map((height, i) => {
+            return {
+                tankType: this.state.tankTypes[i],
+                height: height,
+                length: this.state.lengths[i],
+                breadth: this.state.breadths[i]
+                
+            }
+        });
+        axios.post('stp/add', {
+            username,
+            name,
+            street,
+            state,
+            pincode,
+            tanks,
+            tankObjects
+        }).then( data => data.data )
+          .then( data => console.log(data))
+          .catch( err =>  console.log(err))
+        
+        
+    }
+
+    render(){
+        if(this.props.user.stpId==null ) {
+            return (
+                <Sidebar.Pusher style={{ 'paddingLeft': '150px','paddingTop': '0px', 'height': '1000px'}}>
+                <Segment basic>
+                <Container>
+                    <div>
+                    <Grid verticalAlign='middle' >
                     
-                </Grid>
-                </div>
-            </Container>
-        )
+                    <Grid.Row centered> 
+                        <Form error>
+                        <Grid.Column width={6}>
+                                <Form.Field>
+                                    <label>Name: </label>
+                                    <Input type="text" placeholder="Name" onChange={(e)=>{this.setState({name:e.target.value})}} pattern="(\D(\w+\s?)+)" required />
+                                </Form.Field>
+                                <Form.Field>
+                                    <label>Address: </label>
+                                    <Input type="text" placeholder="Street/Locality" onChange={(e)=>{this.setState({street:e.target.value})}} pattern="(\D(\w+\s?)+)" required />
+                                    <Input type="text" placeholder="District/State" onChange={(e)=>{this.setState({state:e.target.value})}} pattern="(\D(\w+\s?)+)" required />
+                                    <Input type="text" placeholder="Pincode" onChange={(e)=>{this.setState({pincode:e.target.value})}} pattern="(\d{6})" required />
+
+                                </Form.Field>
+                                <Form.Field>
+                                <label> Enter Tanks:</label>
+                                </Form.Field>                           
+                                <Button secondary onClick = {this.addtank} icon='plus'></Button>
+                                <Button secondary onClick = {this.removetank} icon='minus'></Button>
+                        </Grid.Column>
+                        </Form>
+                    </Grid.Row>
+                    <Grid.Row centered column={12}>
+                        {this.state.tankComponents.map(tankComp=>{
+                            return tankComp;
+                        })}
+                    </Grid.Row>
+                    <Grid.Row centered columns={12}>
+                        <Grid.Column width={2} >
+                            <Button primary type="submit"  onClick = {this.handleSubmit}>Submit</Button>
+                        </Grid.Column>
+                    </Grid.Row>
+                    </Grid>
+                    </div>
+                </Container>
+                </Segment>
+            </Sidebar.Pusher>
+            )
+        }
+        else {
+            return (
+                <Redirect to="/dashboard/profile" />
+            )
+        }
     }
 }
 
@@ -170,14 +219,14 @@ class Tank extends Component{
         });
     }
 
-    select(event) {
-		this.setState({ tank_type : event.target.value }, ()=>{
+    select(event, data) {
+		this.setState({ tank_type : data.value }, ()=>{
             this.callParentFunc(this.state.num, 'select', this.state.tank_type);
         });
-	}
+    }
     render(){
         return (
-            <Grid.Column width={4} >
+            <Grid.Column width={6} >
             <Form >
             <Form.Field>
                 <label>Tank {this.state.num} type</label>
@@ -185,9 +234,9 @@ class Tank extends Component{
             </Form.Field>
             <Form.Field>
                 <label>Tank {this.state.num} Dimensions:</label>
-                <input type="number" placeholder="Length"  onChange={this.changeLength} required />
-                <input type="number" placeholder="Breadth"  onChange={this.changeBreadth} required />
-                <input type="number" placeholder="Height" onChange={this.changeHeight} required />
+                <Input label={{ basic: true, content: 'm' }} labelPosition='right' type="text" placeholder="Length"  onChange={this.changeLength} required />
+                <Input label={{ basic: true, content: 'm' }} labelPosition='right' type="text" placeholder="Breadth"  onChange={this.changeBreadth} required />
+                <Input label={{ basic: true, content: 'm' }} labelPosition='right' type="text" placeholder="Height" onChange={this.changeHeight} required />
             </Form.Field>
             </Form>
             <br />
@@ -197,5 +246,5 @@ class Tank extends Component{
     }
 }
 
-export default Setup;
+export default withCookies(Setup);
 

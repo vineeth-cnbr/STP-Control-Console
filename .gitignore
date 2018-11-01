@@ -22,6 +22,8 @@ yarn-error.log*
 
 .vscode
 
+test.js
+
 # Created by https://www.gitignore.io/api/git,node,linux,windows,reactnative,visualstudio,visualstudiocode
 
 ### Git ###
