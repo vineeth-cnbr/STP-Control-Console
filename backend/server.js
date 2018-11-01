@@ -21,14 +21,14 @@ const cors = corsMiddleware({
 
 var server = restify.createServer();
 
-server.pre((req, res, next) => { console.log("hey", req.headers.authorization); next()})
+// server.pre((req, res, next) => { console.log("hey", req.headers.authorization); next()})
 server.use(restify.plugins.queryParser({ mapParams: true }));
 server.use(restify.plugins.bodyParser({ mapParams: true }));
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.pre(cors.preflight)
 server.use(cors.actual);
 // server.pre( (req, res, next) => { res.header("Access-Control-Allow-Origin", "*"); res.header("Access-Control-Allow-Headers", "X-Requested-With"); });
-// server.use(rjwt(config.jwt).unless({ path: ['/auth'] }));
+server.use(rjwt(config.jwt  ).unless({ path: ['/auth', '/signup'] }));
 
 server.get("/tank/:id", (req, res) => {
   console.log("GET TANK ID");
@@ -91,18 +91,25 @@ server.post("/login", (req, res) => {
 
 server.post("/signup", (req, res) => {
   var userBody = req.body;
+  console.log(userBody);
   auth.signup(userBody)
       .then( user => {
-        res.send(user);
+        res.send( {
+          code: 0,
+          user
+        });
       })
       .catch( err => {
-        res.send(err);
+        res.send({
+          code:1,
+          err
+        });
       })
 
 })
 
 server.get('/user', (req, res, next) => {
-  console.log("autho",req.headers.authorization);
+  console.log("autho", req.user);
   if(req.user) {
     res.send({ code: 0, user: req.user });
   }else {

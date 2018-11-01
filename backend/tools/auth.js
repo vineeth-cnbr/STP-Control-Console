@@ -30,9 +30,11 @@ exports.signup = (user) => {
         User.create({ username, name, password, email, role, phone })
             .then( user => {
                 console.log(user);
+                resolve(user);
             })
             .catch( err => {
                 console.log(err);
+                reject(err.message);
             })
     })
 

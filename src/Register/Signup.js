@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 // import logo from './logo.svg';
 // import './App.css';
-import { Select, Button, Form, Grid, Container, Message } from 'semantic-ui-react';
+import { Select, Button, Form, Grid, Container, Message, GridColumn } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 import axios from 'axios';
 axios.defaults.baseURL = 'http://localhost:8080';
 
-const opts = [
+var opts = [
 	{
 		key: 'admin',
 		value: 'admin',
@@ -32,12 +32,16 @@ class Signup extends Component {
         super(props);
         this.state = {
             hasCreated: false,
-            name:'',
-            password:'',
-            email:'',
-            username:'',
-            role:'',
-            phone:'',
+            isError: false,
+            errMessage: '',
+            user: {
+                name:'',
+                password:'',
+                email:'',
+                username:'',
+                role:'',
+                phone:''
+            }
         }
         this.handleSubmit = this.handleSubmit.bind(this);
 
@@ -45,23 +49,28 @@ class Signup extends Component {
     
 
     handleSubmit(){
-        const { name, username, password, email, role, phone } = this.state;
-        axios.post("/signup", {
-                name,
-                password,
-                email,
-                username,
-                role,
-                phone
-            }).then( data =>{
-                data = data.data;
-                console.log(data);
+        this.setState({
+            isError: false
+        })
+        const user = this.state.user;
+        this.props.signup(user)
+            .then()
+            .catch( err => {
+                this.setState( {
+                    isError: true,
+                    errMessage: err
+                });
+            });
+    }
 
-            })
-    
+    handlename(event) {
+        this.setState({
+            user: Object.assign(this.state.user)
+        })
     }
 
     render(){
+        console.log("opts", opts);
         return (
             <Container>
                 <Grid>
@@ -71,36 +80,39 @@ class Signup extends Component {
                         <h1>New User Signup</h1>
                         <Form.Field>
                             <label>Name </label>
-                            <input type='text' placeholder='Name' onChange={(e) => {this.setState({name: e.target.value})}} required />
+                            <input type='text' placeholder='Name' onChange={(e) => {this.setState( { user: Object.assign(this.state.user,{name: e.target.value})})}} required />
                         </Form.Field>
                         
                         <Form.Field>
                             <label>Password </label>
-                            <input type='password' placeholder='Password' onChange={(e) => {this.setState({password: e.target.value})}} required />
+                            <input type='password' placeholder='Password' onChange={(e) => {this.setState( { user: Object.assign(this.state.user,{password: e.target.value})})}} required />
                         </Form.Field>
 
                         <Form.Field>
                             <label>email </label>
-                            <input type='email' placeholder='e-mail Address' onChange={(e) => {this.setState({email: e.target.value})}} required />
+                            <input type='email' placeholder='e-mail Address' onChange={(e) => {this.setState( { user: Object.assign(this.state.user,{email: e.target.value})})}} required />
                         </Form.Field>
 
                         <Form.Field>
                             <label>Username </label>
-                            <input type='text' placeholder='Username' onChange={(e) => {this.setState({username: e.target.value})}} required />
+                            <input type='text' placeholder='Username' onChange={(e) => {this.setState( { user: Object.assign(this.state.user,{username: e.target.value})})}} required />
                         </Form.Field>
 
                         <Form.Field>
                             <label>Role</label>
-                            <Select placeholder="Role" options={opts} onChange={(e) => {this.setState({role: e.target.value})}} required/>
+                            <Select placeholder="Role" options={opts} onChange={(e,data) => {this.setState( { user: Object.assign(this.state.user,{role: data.value})});}} required/>
                         </Form.Field>
 
                         <Form.Field>
                             <label>Phone no. </label>
-                            <input type='text' placeholder='Phone Number' onChange={(e) => {this.setState({phone: e.target.value})}} required />
+                            <input type='text' placeholder='Phone Number' onChange={(e) => {this.setState( { user: Object.assign(this.state.user,{phone: e.target.value})})}} required />
                         </Form.Field>
                         { this.state.isError? <Message error header='Error' content={this.state.errMessage} /> :<br></br> }
                         <Button type='submit' onClick={this.handleSubmit}>Sign up</Button>
                     </Form>
+                </Grid.Column>
+                <Grid.Column width={6}>
+                { this.state.isError? <Message error header='Error' content={this.state.errMessage} /> :<br></br> }
                 </Grid.Column>
                 </Grid>
             </Container>

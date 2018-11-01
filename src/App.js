@@ -7,15 +7,16 @@ import Signup from './Register/Signup';
 import Status from './Dashboard/Status';
 import Logs from './Dashboard/logs'
 import 'semantic-ui-css/semantic.min.css';
-import './index.css';
+import './misc/index.css';
 import axios from 'axios';
 import { withCookies, Cookies } from 'react-cookie';
+import { isError } from 'util';
 
 axios.defaults.baseURL = 'http://localhost:8080';
 
 class App extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       auth: {
         isAuthenticated: false,
@@ -28,17 +29,21 @@ class App extends Component {
     
     this.authenticate = this.authenticate.bind(this);
     this.signout = this.signout.bind(this);
+    this.signup = this.signup.bind(this);
     
   }
 
   componentWillMount() {
     const { cookies } = this.props;
     const token = cookies.get('token')
-    console.log("Token", token);
+    const user = cookies.get('user');
+    console.log("token", token);
+    console.log("user", user);
     axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 
     axios.get("/user")
       .then( data => {
+        data = data.data;
         console.log(data);
         this.setState({
           auth: {
@@ -47,10 +52,12 @@ class App extends Component {
             signout: this.signout,
             user: data.user
           }
+          
         }, () => {
           console.log("The user is logged in", this.state.auth.isAuthenticated)
         })
-          
+        cookies.set('user', data.user);
+        console.log("user", cookies.get('user'));
       })
       .catch( err => console.log(err));
 
@@ -94,6 +101,38 @@ class App extends Component {
     })
   }
 
+  signup(user) {
+	const { name, username, password, email, role, phone } = user;
+	console.log("/signup", user)
+    return new Promise( (resolve, reject) => {
+        axios.post("/signup", {
+          name,
+          password,
+          email,
+          username,
+          role,
+          phone
+      }).then( data =>{
+          data = data.data;
+		  const { code, user, err} = data;
+		  if(code==0) {
+			  resolve(user);
+		  }else {
+			  reject(err)
+		  }
+          console.log(data);
+
+      }).catch( err=> {
+		console.log(err);
+		this.setState ({
+			isError: true,
+			errMessage: err
+		});
+      })
+    })
+    
+  }
+
   render() {
     return (
       <div>    
@@ -102,12 +141,17 @@ class App extends Component {
           <div>
             <Route exact path="/" auth={this.state.authenticate} authenticate={this.authenticate} 
                     render={ (props) => { 
-                        const properties = { auth: this.state.auth, authenticate: this.authenticate };
-                        return homePageRedirect(properties); 
+                          const properties = { auth: this.state.auth, authenticate: this.authenticate };
+                          return homePageRedirect(properties); 
                         }} />
             <PrivateRoute path="/dashboard" component={ Navbar } auth={ this.state.auth } />
             <Route path="/setup" component={Setup} />
-            <Route path="/signup" component={Signup} />
+            <Route path="/signup" 
+                    render={ (props) => {
+                        return (
+                          <Signup signup={this.signup} />
+                        )
+            }} />
 
 
             {/* <Route path="/test" component={(props) => <h1>Hello</h1>} /> */}

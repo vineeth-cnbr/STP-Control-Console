@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // import logo from './logo.svg';
-import '../App.css';
+import '../misc/App.css';
 import { Message, Select, Button, Form, Grid, Container, Divider } from 'semantic-ui-react';
 import { Redirect, Link } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
@@ -37,8 +37,9 @@ class Login extends Component {
 		console.log(this.state.pw);
 		this.setState({ pw: event.target.value });
 	}
-	select(event) {
-		this.setState({ sel: event.target.value });
+	select(event,data) {
+		console.log(data.value);
+		this.setState({ sel: data.value });
 	}
 	handleSubmit(event) {
 		this.props.authenticate(this.state.name, this.state.pw).then(data => {

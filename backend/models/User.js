@@ -20,7 +20,7 @@ var User = sequelize.define('user', {
         defaultValue: null
     },
     email: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         validate: {
             isEmail: true
         },
