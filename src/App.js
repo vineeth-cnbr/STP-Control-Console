@@ -22,7 +22,8 @@ class App extends Component {
       auth: {
         isAuthenticated: false,
         signout: this.signout,
-        user: {}
+        user: {
+        }
       }
       
     }
@@ -45,21 +46,21 @@ class App extends Component {
     axios.get("/user")
       .then( data => {
         data = data.data;
-        console.log(data);
+        console.log("user", data.user);
         this.setState({
           auth: {
             token: token,
             isAuthenticated: true,
             signout: this.signout,
-			user: data.user,
-			stp: data.stp,
-			tanks: data.tanks
+            user: data.user,
+            stp: data.stp,
+            tanks: data.tanks
           }
           
         }, () => {
           console.log("The user is logged in", this.state.auth.isAuthenticated)
         })
-        cookies.set('user', data);
+        cookies.set('user', data.user);
         console.log("user", cookies.get('user'));
       })
       .catch( err => console.log(err));
@@ -76,21 +77,20 @@ class App extends Component {
         password
       }).then(data => {
         data = data.data
-        
+        // console.log(data.code)
         if(data.code == 0) {
           this.setState({
-            auth: {
+            auth: Object.assign(this.state.auth,{
               token: data.token,
-			  isAuthenticated: true,
-			  user: data.user
-            }
+              isAuthenticated: true,
+            })
           });
           console.log(" The user is logged in: ",this.state.auth.isAuthenticated)
-		}
-		cookies.set('user', data.user)
+          
+        }
         resolve(data);
       }).catch(data => {
-        console.log(data);
+        console.log("Auth err", data);
       })
     })
       

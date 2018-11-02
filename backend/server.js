@@ -28,7 +28,7 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.pre(cors.preflight)
 server.use(cors.actual);
 // server.pre( (req, res, next) => { res.header("Access-Control-Allow-Origin", "*"); res.header("Access-Control-Allow-Headers", "X-Requested-With"); });
-server.use(rjwt(config.jwt  ).unless({ path: ['/auth', '/signup', '/stp/add'] }));
+server.use(rjwt(config.jwt  ).unless({ path: ['/auth', '/signup', '/stp/add',] }));
 
 server.get("/tank/:id", (req, res) => {
   console.log("GET TANK ID");
@@ -94,9 +94,10 @@ server.post("/signup", (req, res) => {
   console.log(userBody);
   auth.signup(userBody)
       .then( user => {
+        console.log(user);
         res.send( {
           code: 0,
-          user
+          user: user
         });
       })
       .catch( err => {
