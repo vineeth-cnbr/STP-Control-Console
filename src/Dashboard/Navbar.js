@@ -8,9 +8,10 @@ import { Redirect } from 'react-router-dom';
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import Logs from './logs';
 import Login from '../Register/Login';
-import Setup from '../Register/Setup';
+import Setup from './Setup';
 import Profile from './Profile'
-import { Cookies, withCookies } from 'react-cookie';
+import Store from '../Store';
+import { view } from 'react-easy-state';
 
 // const ProgressExampleProgress = () => 
 
@@ -29,35 +30,39 @@ class Navbar extends React.Component {
     }
 
     render() {
-        const { cookies } = this.props; 
-        const user = this.props.auth.user;
-        console.log(user)
-        const { signout } = this.props.auth;
-        const isAuthenticated = false;
+        const user = Store.user;
+        console.log("User",user)
+        const { signout } = Store;
         const { visible } = this.state;
         return (
             
             <div>
-            <div className="ui top attached menu" style={{}}>
+            <Menu className="ui top attached menu" color='red'>
                     <a className="item" onClick={this.handleButtonClick}>
                         <i className="sidebar icon"></i>
                         STP Dashboard - Admin
                     </a>
-            </div>
+                    
+                    <Menu.Item position='right'>
+                        <b>Welcome, {user.name}!</b>
+                    </Menu.Item>
+                    <Menu.Item  position='right'>
+                        <b>{user.username}</b>
+                    </Menu.Item>
+                    
+            </Menu>
             
-            <Sidebar.Pushable as={Segment}>
+            <Sidebar.Pushable as={Segment} style={{ 'paddingLeft': '150px','paddingTop': '0px', 'height': '1000px'}}>
                 <Sidenav visible={this.state.visible} signout={signout} />
                     <div>
                         { (user.stpId!=null)?
-                                <Route exact path="/dashboard" render={ props => <Status auth={this.props.auth} /> } />
+                                <Route exact path="/dashboard" render={ props => <Status /> } />
                                 :   <Redirect to="/dashboard/profile/setup" />
                             
-                             }}
+                             }
                         <Route exact path="/dashboard/logs" component = {Logs} />
                         <Route exact path="/dashboard/profile" component = {Profile} />
-                        <Route exact path="/dashboard/profile/setup" render={ props => {
-                            return <Setup user={user} />
-                        }} />
+                        <Route exact path="/dashboard/profile/setup" component = {Setup} />
                         {/* </Route> */}
                     </div>
                 
@@ -68,4 +73,4 @@ class Navbar extends React.Component {
 }
 
 
-export default withCookies(Navbar)
+export default view(Navbar)

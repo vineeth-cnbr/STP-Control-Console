@@ -4,8 +4,9 @@ import '../misc/App.css';
 import { Select, Button, Form, Grid, Container,Sidebar, Segment, Input } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 import axios from 'axios';
-import { withCookies } from 'react-cookie'
 import { Redirect } from 'react-router';
+import { store, view } from 'react-easy-state';
+import Store from '../Store';
 
 const opts = [
     {
@@ -39,6 +40,7 @@ class Setup extends Component {
             breadths: [],
             lengths: [],
             tankTypes: [],
+            isSubmitted: false
         }
         this.addtank = this.addtank.bind(this);
         this.addAttribute = this.addAttribute.bind(this);
@@ -98,8 +100,7 @@ class Setup extends Component {
 
     handleSubmit() {
         var { tanks, name, street, state, pincode }  = this.state;
-        var { cookies } = this.props;
-        var { username } = this.props.user;
+        var { username } = Store.user;
         var tankObjects = this.state.heights.map((height, i) => {
             return {
                 tankType: this.state.tankTypes[i],
@@ -118,16 +119,22 @@ class Setup extends Component {
             tanks,
             tankObjects
         }).then( data => data.data )
-          .then( data => console.log(data))
+          .then( data => {
+              this.setState({
+                  isSubmitted: true,
+              })
+          })
           .catch( err =>  console.log(err))
         
         
     }
 
     render(){
-        if(this.props.user.stpId==null ) {
+        const user = Store.user;
+        if(user.stpId==null && !this.state.isSubmitted ) {
             return (
-                <Sidebar.Pusher style={{ 'paddingLeft': '150px','paddingTop': '0px', 'height': '1000px'}}>
+                // <Sidebar.Pusher style={{ 'paddingLeft': '150px','paddingTop': '0px', 'height': '1000px'}}>
+                <Sidebar.Pusher >
                 <Segment basic>
                 <Container>
                     <div>
@@ -173,9 +180,12 @@ class Setup extends Component {
             )
         }
         else {
-            return (
-                <Redirect to="/dashboard/profile" />
-            )
+            if(this.state.isSubmitted) {
+                return (
+                    <Redirect to="/dashboard" />
+                )
+            }
+            
         }
     }
 }
@@ -246,5 +256,5 @@ class Tank extends Component{
     }
 }
 
-export default withCookies(Setup);
+export default view(Setup);
 

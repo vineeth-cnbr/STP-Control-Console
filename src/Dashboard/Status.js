@@ -1,6 +1,7 @@
 import React from 'react';
 import { Loader, Header, Icon, Image, Menu, Segment, Sidebar, Progress, Grid, Button, Radio } from 'semantic-ui-react'
 import axios from 'axios';
+import Store from '../Store'
 
 axios.defaults.baseURL = 'http://localhost:8080';
 
@@ -8,10 +9,10 @@ axios.defaults.baseURL = 'http://localhost:8080';
 class Status extends React.Component {
     constructor(props) {
         super(props)
-        console.log("props", props)
+        const { user, stp, tanks } = Store;
         this.setState({
-            stp: this.props.auth.stp,
-            tanks: this.props.auth.tanks,
+            stp,
+            tanks,
         });
         this.update = this.update.bind(this);
         console.log("FIRST");
@@ -26,11 +27,13 @@ class Status extends React.Component {
     // }
 
     componentWillMount() {
+        const { stp, tanks } = Store;
         this.setState({
-            stp: this.props.auth.stp,
-            tanks: this.props.auth.tanks,
+            stp,
+            tanks,
         });
-        let { token } = this.props.auth;
+        var storage = window.localStorage;
+        var token = storage.getItem('token');
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 
         setInterval(
@@ -46,17 +49,21 @@ class Status extends React.Component {
 
     update() {
 
-        let newTanks = this.props.auth.tanks.map( async (tank,i) => {
+        let newTanks = this.state.tanks.map( async (tank,i) => {
             let response = await axios.get("/tank/" + tank.id);
             let data = response.data;
             let newTank = Object.assign(tank, data)
             console.log(newTank);
             return newTank;
         })
-        console.log("update", newTanks);
-        this.setState({
-            tanks: newTanks
-        })
+        Promise.all(newTanks)
+            .then( (tanks) => {
+                this.setState({
+                    tanks
+                })
+            })
+        // console.log("update", newTanks);
+       
         
         
         // axios.get("/tank/C101")
@@ -98,7 +105,8 @@ class Status extends React.Component {
                         { tanks.map( (tank,i) => {
                             return (
                                 <Grid.Column>
-                                    <h5>Tank {i}</h5>
+                                    <h5>Tank {tank.id}</h5>
+                                    <h5>Status: <span style={{color: 'green'}}>{tank.status? "On": "Off"}</span></h5>
                                     <Progress percent = {tank.level} size='big' progress indicating ></Progress>
                                 </Grid.Column>
                             )

@@ -5,17 +5,20 @@ import { Message, Select, Button, Form, Grid, Container, Divider } from 'semanti
 import { Redirect, Link } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
 import { withCookies } from 'react-cookie';
+import { view } from 'react-easy-state';
+import Store from '../Store';
 
 class Login extends Component {
 	constructor(props) {
 		super(props);
+		console.log("Constructor login ", Store.isAuthenticate)
 		this.state = {
 			name: "",
 			pw: "",
 			sel: "",
 			isError: false,
 			errMessage: '',
-			loggedIn: false
+			loggedIn: this.props.isAuthenticated
 		}
 
 		this.handleSubmit = this.handleSubmit.bind(this);
@@ -23,10 +26,12 @@ class Login extends Component {
 		this.pwhandle = this.pwhandle.bind(this);
 		this.select = this.select.bind(this);
 	}
-	componentWillMount() {
-		this.setState({
-			loggedIn: this.props.auth.isAuthenticated
-		})
+	componentDidMount() {
+
+		this.setState( {
+			loggedIn: this.props.isAuthenticated
+		});
+		console.log("compwillmount ", this.props.isAuthenticated)
 
 	}
 	namehandle(event) {
@@ -42,7 +47,8 @@ class Login extends Component {
 		this.setState({ sel: data.value });
 	}
 	handleSubmit(event) {
-		this.props.authenticate(this.state.name, this.state.pw).then(data => {
+		const { isAuthenticated, authenticate } = Store;
+		authenticate(this.state.name, this.state.pw).then(data => {
 			const { code, message, iat, exp, token } = data;
 			if(code == 1 ) {
 				this.setState({
@@ -51,11 +57,13 @@ class Login extends Component {
 				})
 			}else if(code == 0) {
 				console.log("auth", token, iat, exp);
-				const { cookies } = this.props;
-				cookies.set('token', token)
+				var storage = window.localStorage;
+				storage.setItem('token', token);
 				// axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+				Store.isAuthenticated = true;
 				this.setState({
-					loggedIn: true
+					loggedIn: true,
+					isError: false
 				})
 				
 			}
@@ -63,9 +71,9 @@ class Login extends Component {
 		event.preventDefault();
 	}
 	render() {
-		var { loggedIn } = this.state;
-		console.log("inside render", loggedIn)
-		// console.log("Cookies ", this.props.allCookies);
+
+		var loggedIn = Store.isAuthenticated;
+		console.log("Login render", loggedIn)
 		if(!loggedIn) {
 		return (
 			<Container>
@@ -81,7 +89,7 @@ class Login extends Component {
 
 						<Grid.Column>
 						<div id='FormGrid'>
-							<Form error  onSubmit={this.handleSubmit}>
+							<Form error={this.state.isError}  onSubmit={this.handleSubmit}>
 								<Form.Field>
 									<label>Username</label>
 									<input placeholder='Username..' type='text' onChange={this.namehandle} required />
@@ -93,7 +101,7 @@ class Login extends Component {
 								{/* <Form.Field>
 									<Select placeholder='Select your role' options={opts} onChange={this.select} required />
 								</Form.Field> */}
-							    { this.state.isError? <Message error header='Error' content={this.state.errMessage} /> :<br></br> }
+							    <Message error header='Error' content={this.state.errMessage} />
 								<Button primary type='submit'>Submit</Button>
 							</Form>
 						</div>
@@ -108,6 +116,8 @@ class Login extends Component {
 
 		);
 		}else {
+			
+			console.log("Redirect")
 			return (
 				<Redirect to="/dashboard" />
 			)
@@ -138,4 +148,4 @@ var opts = [
 
 
 
-export default withCookies(Login);
+export default Login;

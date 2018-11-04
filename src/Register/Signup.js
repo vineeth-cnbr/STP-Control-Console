@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 // import logo from './logo.svg';
 // import './App.css';
-import { Select, Button, Form, Grid, Container, Message } from 'semantic-ui-react';
+import { Select, Button, Form, Grid, Container, Message, Input } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 import axios from 'axios';
 import { Redirect } from 'react-router';
+import { view } from 'react-easy-state';
+import Store from '../Store';
 axios.defaults.baseURL = 'http://localhost:8080';
 
 
@@ -16,6 +18,9 @@ class Signup extends Component {
             hasCreated: false,
             isError: false,
             errMessage: '',
+            isUsernameLoading: false,
+            usernameIcon: 'user',
+            usernameError: false,
             user: {
                 name:'',
                 password:'',
@@ -26,16 +31,20 @@ class Signup extends Component {
             }
         }
         this.handleSubmit = this.handleSubmit.bind(this);
-
+        this.addAtt = this.addAtt.bind(this);
+        this.selectRole = this.selectRole.bind(this);
+        this.onChangeUsername = this.onChangeUsername.bind(this);
     }
     
 
     handleSubmit(){
+        console.log("onsubmit")
         this.setState({
             isError: false
         })
         const user = this.state.user;
-        this.props.signup(user)
+        const { signup } = Store;
+        signup(user)
             .then( data => {
                 this.setState({
                     hasCreated: true
@@ -50,9 +59,68 @@ class Signup extends Component {
     }
 
     handlename(event) {
+        
+        // this.setState({
+        //     user: Object.assign(this.state.user)
+        // })
+    }
+
+    addAtt(event) {
+        console.log(event.target.name);
+        let att = {};
+        att[event.target.name] = event.target.value;
         this.setState({
-            user: Object.assign(this.state.user)
+            user: Object.assign(this.state.user, att)
+        });
+    }
+
+    selectRole(e, data) {
+        // console.log(event.target.name);
+        let att = {};
+        att['role'] = data.value;
+        this.setState({
+            user: Object.assign(this.state.user, att)
+        });
+    }
+    
+    onChangeUsername(event) {
+        let username = this.state.user.username;
+        this.setState({
+            isUsernameLoading: true,
+            isError: false,
+            usernameError: false
         })
+        axios.post('/username', {
+            username
+        }).then( data => {
+            data = data.data;
+            console.log(data);
+            this.setState({
+                isUsernameLoading: false
+            })
+            if(data==null) {
+                this.setState({
+                    usernameIcon: 'thumbs up'
+                })
+            }else {
+                this.setState({
+                    usernameIcon: 'times circle outline',
+                    usernameError: true,
+                    errMessage: 'Username already exists',
+                    isError: true
+                })
+            }
+        }).catch( err => {
+            this.setState({
+                isError: true,
+                isUsernameLoading: false,
+                errMessage: err,
+                usernameIcon: 'user',
+                usernameError: true,
+            })
+        })
+
+
     }
 
     render(){
@@ -61,44 +129,45 @@ class Signup extends Component {
                 <Container>
                     <Grid>
                     <Grid.Column width={6}>
-                        <Form>
+                        <Form onSubmit={this.handleSubmit}>
                             <br /><br />
-                            <h1>New User Signup</h1>
+                            <h1 style={{color: 'rgb(0,129,227)'}}>New User Signup</h1>
                             <Form.Field>
                                 <label>Name </label>
-                                <input type='text' placeholder='Name' onChange={(e) => {this.setState( { user: Object.assign(this.state.user,{name: e.target.value})})}} required />
+                                <Input type='text' iconPosition='left' icon='address card outline' name='name' placeholder='Name' onChange={this.addAtt} required />
                             </Form.Field>
                             
                             <Form.Field>
                                 <label>Password </label>
-                                <input type='password' placeholder='Password' onChange={(e) => {this.setState( { user: Object.assign(this.state.user,{password: e.target.value})})}} required />
+                                <Input type='password' iconPosition='left' icon='key' name='password' placeholder='Password' onChange={this.addAtt} required />
                             </Form.Field>
 
                             <Form.Field>
                                 <label>email </label>
-                                <input type='email' placeholder='e-mail Address' onChange={(e) => {this.setState( { user: Object.assign(this.state.user,{email: e.target.value})})}} required />
+                                <Input type='email' iconPosition='left' name='email' icon='mail' placeholder='e-mail Address' onChange={this.addAtt} required />
                             </Form.Field>
 
-                            <Form.Field>
+                            <Form.Field error={this.state.usernameError}>
                                 <label>Username </label>
-                                <input type='text' placeholder='Username' onChange={(e) => {this.setState( { user: Object.assign(this.state.user,{username: e.target.value})})}} required />
+                                <Input type='text' iconPosition='left' name='username' error={this.state.usernameError} loading={this.state.isUsernameLoading} icon={this.state.usernameIcon} placeholder='Username' onInput={this.addAtt} onChange={this.onChangeUsername} required />
                             </Form.Field>
 
                             <Form.Field>
                                 <label>Role</label>
-                                <Select placeholder="Role" options={opts} onChange={(e,data) => {this.setState( { user: Object.assign(this.state.user,{role: data.value})});}} required/>
+                                <Select placeholder="Role" name ='role' options={opts} onChange={this.selectRole} required/>
                             </Form.Field>
 
                             <Form.Field>
                                 <label>Phone no. </label>
-                                <input type='text' placeholder='Phone Number' onChange={(e) => {this.setState( { user: Object.assign(this.state.user,{phone: e.target.value})})}} required />
+                                <Input type='text' iconPosition='left' icon='phone' placeholder='Phone Number' onChange={(e) => {this.setState( { user: Object.assign(this.state.user,{phone: e.target.value})})}} required />
                             </Form.Field>
-                            { this.state.isError? <Message error header='Error' content={this.state.errMessage} /> :<br></br> }
-                            <Button primary type='submit' onClick={this.handleSubmit}>Sign up</Button>
+                            {/* { this.state.isError? <Message error header='Error' content={this.state.errMessage} /> :<br></br> } */}
+                            <Button primary type='submit'>Sign up</Button>
                         </Form>
                     </Grid.Column>
+                    <Grid.Column />
                     <Grid.Column width={6}>
-                    <br /><br />
+                    <br /><br /><br />
                         { this.state.isError? 
                                 <Message error header='Error' content={this.state.errMessage} /> 
                                 : <br></br> }
@@ -136,5 +205,5 @@ var opts = [
 	}
 ];
 
-export default Signup;
+export default view(Signup);
 //name pass e-mail username role phone
