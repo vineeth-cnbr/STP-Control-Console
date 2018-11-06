@@ -38,7 +38,7 @@ class Status extends React.Component {
 
         this.timerID = setInterval(
           this.update,
-          6000
+          1000
         );
     }
     componentWillUnmount() {
