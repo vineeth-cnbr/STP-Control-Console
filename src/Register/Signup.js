@@ -8,7 +8,7 @@ import { Redirect } from 'react-router';
 import { view } from 'react-easy-state';
 import Store from '../Store';
 axios.defaults.baseURL = 'http://localhost:8080';
-
+const passSize = 4;
 
 
 class Signup extends Component {
@@ -34,6 +34,10 @@ class Signup extends Component {
         this.addAtt = this.addAtt.bind(this);
         this.selectRole = this.selectRole.bind(this);
         this.onChangeUsername = this.onChangeUsername.bind(this);
+        this.passChange = this.passChange.bind(this);
+        this.emailChange = this.emailChange.bind(this);
+        this.phoneChange = this.phoneChange.bind(this);
+
     }
     
 
@@ -74,6 +78,67 @@ class Signup extends Component {
         });
     }
 
+    phoneChange(event){
+        let regex = /^[0-9]{10}$/;
+        this.setState({
+            errMessage : '',
+            isError:false,
+        })
+        if(regex.test(event.target.value) == true){
+            this.setState({
+                errMessage : '',
+                isError:false,
+            })
+        }
+        else{
+            this.setState({
+                errMessage : 'Phone number must contain 10 digits.',
+                isError:true,
+            })
+        }
+    }
+
+    emailChange(event){
+        let regex = /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+        this.setState({
+            errMessage : '',
+            isError:false,
+        })
+        if(regex.test(event.target.value) == true){
+            this.setState({
+                errMessage : '',
+                isError:false,
+            })
+        }
+        else{
+            this.setState({
+                errMessage : 'Please enter a valid email id.',
+                isError:true,
+            })
+        }
+    }
+
+    passChange(event){
+        let regex = /[a-zA-Z0-9!@#$%^&*()_+=<,.>?]{4,}/;
+        this.setState({
+            errMessage : '',
+            isError:false,
+        })
+        console.log(event.target.value);
+        if(regex.test(event.target.value) == true){
+            this.setState({
+                errMessage : '',
+                isError:false,
+            })
+        }
+        else{
+            this.setState({
+                errMessage : 'Password should be more than '+ passSize,
+                isError:true,
+            })
+        }
+    }
+
     selectRole(e, data) {
         // console.log(event.target.name);
         let att = {};
@@ -85,41 +150,54 @@ class Signup extends Component {
     
     onChangeUsername(event) {
         let username = this.state.user.username;
-        this.setState({
-            isUsernameLoading: true,
-            isError: false,
-            usernameError: false
-        })
-        axios.post('/username', {
-            username
-        }).then( data => {
-            data = data.data;
-            console.log(data);
+        let regex = /[a-zA-Z]+([_\s\-]?[a-zA-Z0-9]){4,}/;
+        if(regex.test(username) == true){
             this.setState({
-                isUsernameLoading: false
+                isUsernameLoading: true,
+                isError: false,
+                usernameError: false
             })
-            if(data==null) {
+            axios.post('/username', {
+                username
+            }).then( data => {
+                data = data.data;
+                console.log(data);
                 this.setState({
-                    usernameIcon: 'thumbs up'
+                    isUsernameLoading: false
                 })
-            }else {
+                if(data==null) {
+                    this.setState({
+                        usernameIcon: 'thumbs up'
+                    })
+                }else {
+                    this.setState({
+                        usernameIcon: 'times circle outline',
+                        usernameError: true,
+                        errMessage: 'Username already exists',
+                        isError: true
+                    })
+                }
+            }).catch( err => {
                 this.setState({
-                    usernameIcon: 'times circle outline',
+                    isError: true,
+                    isUsernameLoading: false,
+                    errMessage: err,
+                    usernameIcon: 'user',
                     usernameError: true,
-                    errMessage: 'Username already exists',
-                    isError: true
                 })
-            }
-        }).catch( err => {
-            this.setState({
-                isError: true,
-                isUsernameLoading: false,
-                errMessage: err,
-                usernameIcon: 'user',
-                usernameError: true,
             })
-        })
+        
+        }
+        else{
+            this.setState({
+                usernameIcon: 'times circle outline',
+                usernameError: true,
+                errMessage: 'Minimum length of username must be 4 characters',
+                isError: true
+            })
+        }
 
+        
 
     }
 
@@ -139,12 +217,12 @@ class Signup extends Component {
                             
                             <Form.Field>
                                 <label>Password </label>
-                                <Input type='password' iconPosition='left' icon='key' name='password' placeholder='Password' onChange={this.addAtt} required />
+                                <Input type='password' iconPosition='left' icon='key' name='password' placeholder='Password' onInput={this.passChange} onChange={this.addAtt} required />
                             </Form.Field>
 
                             <Form.Field>
                                 <label>email </label>
-                                <Input type='email' iconPosition='left' name='email' icon='mail' placeholder='e-mail Address' onChange={this.addAtt} required />
+                                <Input type='email' iconPosition='left' name='email' icon='mail' placeholder='e-mail Address' onInput={this.emailChange} onChange={this.addAtt} required />
                             </Form.Field>
 
                             <Form.Field error={this.state.usernameError}>
@@ -159,7 +237,7 @@ class Signup extends Component {
 
                             <Form.Field>
                                 <label>Phone no. </label>
-                                <Input type='text' iconPosition='left' icon='phone' placeholder='Phone Number' onChange={(e) => {this.setState( { user: Object.assign(this.state.user,{phone: e.target.value})})}} required />
+                                <Input type='text' iconPosition='left' icon='phone' placeholder='Phone Number' onInput={this.phoneChange} onChange={(e) => {this.setState( { user: Object.assign(this.state.user,{phone: e.target.value})})}} required />
                             </Form.Field>
                             {/* { this.state.isError? <Message error header='Error' content={this.state.errMessage} /> :<br></br> } */}
                             <Button primary type='submit'>Sign up</Button>
