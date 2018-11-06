@@ -80,7 +80,8 @@ axios.get("/user")
         console.log("user", data.user);
         Store.user = data.user;
         Store.stp = data.stp;
-        Store.tanks = data.tanks;
+				Store.tanks = data.tanks;
+				Store.notifications = data.notifications;
         Store.isAuthenticated = true;
       })
       .catch( err => console.log(err));

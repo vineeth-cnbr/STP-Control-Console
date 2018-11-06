@@ -66,7 +66,7 @@ server.post('/auth', (req, res, next) => {
 
     // retrieve issue and expiration times
     let { iat, exp } = jwt.decode(token);
-    res.send({ code: 0, iat, exp, token });
+    res.send({ code: 0, iat, exp, token, user: data });
   }).catch( err => {
     res.send( {
       code: 1,
@@ -118,12 +118,17 @@ server.get('/user', async (req, res, next) => {
       var stp = await Stp.findByPk(user.stpId);
       stp = stp['dataValues'];
       let tanks = await Tank.findAll({ where: { stpId: user.stpId }});
+      let notifs = await Notification.findAll({ where: { stpId: user.stpId }});
+      
       var newtanks = tanks.map( (tank) => {
         return tank['dataValues'];
+      });
+      var newnotifs = notifs.map( notif => {
+        return notif['dataValues'];
       })
-      console.log(newtanks);
+      console.log(newnotifs);
     }
-    res.send({ code: 0, user, stp, tanks: newtanks });
+    res.send({ code: 0, user, stp, tanks: newtanks, notifications: newnotifs });
   }catch(err) {
     console.log(err);
     res.send({ code: 1, message: "You are not authenticated." })

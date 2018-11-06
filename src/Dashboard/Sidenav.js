@@ -19,7 +19,7 @@ class Sidenav extends Component {
                             Status
                         </Menu.Item>
                     </Link>
-                    <Link to="/dashboard/logs">
+                    <Link to="/dashboard/alerts">
                         <Menu.Item as='a'>
                             <Icon name='file alternate outline' />
                             Alerts

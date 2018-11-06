@@ -15,7 +15,6 @@ class Status extends React.Component {
             tanks,
         });
         this.update = this.update.bind(this);
-        console.log("FIRST");
     }
 
     // changeCStatus = (event) => {
