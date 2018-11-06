@@ -25,7 +25,7 @@ class Sidenav extends Component {
                             Alerts
                         </Menu.Item>
                     </Link>
-                    <Link to="/dashboard/profile/setup">
+                    <Link to="/dashboard/profile">
                         <Menu.Item as='a'>
                             <Icon name='user outline' />
                             Profile

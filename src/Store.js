@@ -1,5 +1,7 @@
 import { store } from 'react-easy-state';
 import axios from 'axios';
+axios.defaults.baseURL = 'http://localhost:8080';
+
 
 const Store = store({
 	user: {},
@@ -16,7 +18,7 @@ const Store = store({
               data = data.data
               // console.log(data.code)
               if(data.code == 0) {
-
+								Store.user = data.user;
                 Store.isAuthenticated = true;
                 console.log(" The user is logged in: ",Store.isAuthenticated)
               }
@@ -64,6 +66,7 @@ const Store = store({
 		var storage = window.localStorage;
 		storage.removeItem('token');
 		Store.isAuthenticated = false;
+		Store.user = {}
 	}
 
 });

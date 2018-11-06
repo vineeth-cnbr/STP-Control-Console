@@ -60,7 +60,6 @@ class Login extends Component {
 				var storage = window.localStorage;
 				storage.setItem('token', token);
 				// axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-				Store.isAuthenticated = true;
 				this.setState({
 					loggedIn: true,
 					isError: false

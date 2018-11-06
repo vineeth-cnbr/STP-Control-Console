@@ -31,6 +31,7 @@ class Navbar extends React.Component {
 
     render() {
         const user = Store.user;
+        console.log(Store);
         console.log("User",user)
         const { signout } = Store;
         const { visible } = this.state;

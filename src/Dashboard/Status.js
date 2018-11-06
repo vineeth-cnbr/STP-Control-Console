@@ -1,5 +1,5 @@
 import React from 'react';
-import { Loader, Header, Icon, Image, Menu, Segment, Sidebar, Progress, Grid, Button, Radio } from 'semantic-ui-react'
+import { Loader, Header, Icon, Image, Menu, Segment, Sidebar, Progress, Grid, Container, Button, Radio } from 'semantic-ui-react'
 import axios from 'axios';
 import Store from '../Store'
 
@@ -36,7 +36,7 @@ class Status extends React.Component {
         var token = storage.getItem('token');
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 
-        setInterval(
+        this.timerID = setInterval(
           this.update,
           6000
         );
@@ -89,12 +89,18 @@ class Status extends React.Component {
         return (
             <Sidebar.Pusher style={{ 'paddingLeft': '150px','paddingTop': '0px','height': '1000px'}}>
             <Segment basic>
-                
-            <Header as='h2' icon>
-                <Icon name='recycle' />
-                STP Status
+            <Container>
+            <Grid columns={1}>
+            <Grid.Row>
+            <Grid.Column width={6}>
+            
+            <Header as='h1' icon>
+                <Icon name='recycle' color='green' style={{textAlign: 'left'}}/>
+                STP {this.state.stp.name} Status
             </Header>
-            <Grid columns={2}>
+            </Grid.Column>
+            </Grid.Row>
+            
                 <Grid.Row>
                     {/* <Grid.Column>
                         <h5>Collection Tank Capacity</h5> <p>State: {this.cState} </p><Radio toggle checked={this.state.cState} onChange={this.changeCStatus} />
@@ -104,15 +110,16 @@ class Status extends React.Component {
                 {/* <Image src='/images/wireframe/paragraph.png' /> */}
                         { tanks.map( (tank,i) => {
                             return (
-                                <Grid.Column>
+                                <Grid.Column width={6}>
                                     <h5>Tank {tank.id}</h5>
-                                    <h5>Status: <span style={{color: 'green'}}>{tank.status? "On": "Off"}</span></h5>
+                                    <h5>Status: <span style={{color: (tank.status)?'green':'red'}}>{tank.status? "On": "Off"}</span></h5>
                                     <Progress percent = {tank.level} size='big' progress indicating ></Progress>
                                 </Grid.Column>
                             )
                         })}
                 </Grid.Row>
             </Grid>
+            </Container>
             </Segment>
             </Sidebar.Pusher>
         )
