@@ -1,6 +1,7 @@
 import './misc/App.css';
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom'
+import Store from './Store.js'
 import Navbar from './Dashboard/Navbar';
 import Login from './Register/Login';
 import Setup from './Dashboard/Setup';
@@ -10,7 +11,6 @@ import './misc/index.css';
 import axios from 'axios';
 import { view } from 'react-easy-state';
 import { isError } from 'util';
-import Store from './Store.js'
 axios.defaults.baseURL = 'http://localhost:8080';
 
 class App extends Component {

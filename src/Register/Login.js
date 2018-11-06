@@ -11,7 +11,7 @@ import Store from '../Store';
 class Login extends Component {
 	constructor(props) {
 		super(props);
-		console.log("Constructor login ", Store.isAuthenticate)
+		console.log("Constructor login ", Store.isAuthenticate, this.props.isAuthenticated)
 		this.state = {
 			name: "",
 			pw: "",
@@ -72,7 +72,9 @@ class Login extends Component {
 	render() {
 
 		var loggedIn = Store.isAuthenticated;
-		console.log("Login render", loggedIn)
+		var user = Store.user;
+
+		console.log("Login render", loggedIn, user)
 		if(!loggedIn) {
 		return (
 			<Container>
