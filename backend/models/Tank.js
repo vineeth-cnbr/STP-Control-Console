@@ -49,7 +49,7 @@ Tank.sync();
 //     plain: true
 //   }));
 // });
- Tank.create({id: 'C101', length: 1200, breadth: 5600, height: 8700, status: false, level: 30});
+//  Tank.create({id: 'C101', length: 1200, breadth: 5600, height: 8700, status: false, level: 30});
 addTank = async () => {
 	try {
 		let STP = await Stp.create({ id: 'STP107', name: "Amrita"});
