@@ -34,21 +34,21 @@ var User = sequelize.define('user', {
         defaultValue: null
     }
   });
-  
+
   User.belongsTo(Stp);
   User.sync();
 
   const addUser = async () => {
     try {
         let stp = await Stp.findById('STP101');
-        let user = await User.create({username: 'vineeth-cnbr'});
+        let user = await User.create({username: 'SHREYANSH', password:'qwerty'});
         user.setStp(stp);
     }catch(err) {
         console.log(err);
     }
   }
   console.log("Add user");
-  
-//   addUser();
-  
+
+  // addUser()
+
   module.exports = User;
