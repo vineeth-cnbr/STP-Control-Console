@@ -7,6 +7,10 @@ var Tank = sequelize.define('tank', {
 		type: Sequelize.STRING,
 		primaryKey: true
 	},
+	type: {
+		type: Sequelize.STRING,
+		defaultValue: null
+	},
 	length: {
 		type: Sequelize.INTEGER,
 		defaultValue: null
@@ -29,7 +33,7 @@ var Tank = sequelize.define('tank', {
 			max: 100,
 			min: 0
 		},
-		defaultValue: null
+		defaultValue: 0
 	}
 });
 Tank.belongsTo(Stp);

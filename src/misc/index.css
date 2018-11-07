@@ -1,0 +1,26 @@
+.ui.segment.pushable {
+  height: -webkit-fill-available;
+  height: 100%;
+  margin-top: 0px;
+  border: 0px;
+  padding-top: 50px;
+  background-image: url('./back2.jpg');
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+#root {
+  background-image: url('./back.jpg');
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 100%;
+}
+/* #FormGrid{
+  margin-top: 15%;
+} */
+body {
+  font-family: 'Lato';
+}

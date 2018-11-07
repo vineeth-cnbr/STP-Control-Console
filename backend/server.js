@@ -68,7 +68,7 @@ server.post("/settank", (req, res) => {
       Tank.create({id:id , length:length, breadth:breadth, height:height,level:level,stpId:stpid})
         .then((tank) => {
           User.update
-          res.send("OK");
+          res.send(id);
         })
         .catch(err => {
           res.send(err);

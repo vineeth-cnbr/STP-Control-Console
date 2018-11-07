@@ -4,8 +4,13 @@ var Stp = require('./Stp');
 
 var Notification = sequelize.define('notification', {
     id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
+    code: {
         type: Sequelize.STRING,
-        primaryKey: true
+        defaultValue: null
     },
     msg: {
         type: Sequelize.STRING,

@@ -19,13 +19,19 @@ class Sidenav extends Component {
                             Status
                         </Menu.Item>
                     </Link>
-                    <Link to="/dashboard/logs">
+                    <Link to="/dashboard/alerts">
                         <Menu.Item as='a'>
                             <Icon name='file alternate outline' />
                             Alerts
                         </Menu.Item>
                     </Link>
-                    <Menu.Item as='a' onClick={this.props.signout()}>
+                    <Link to="/dashboard/profile">
+                        <Menu.Item as='a'>
+                            <Icon name='user outline' />
+                            Profile
+                        </Menu.Item>
+                    </Link>
+                    <Menu.Item as='a' onClick={this.props.signout}>
                         <Icon name='pointing left' />
                         Signout
                     </Menu.Item>
