@@ -29,11 +29,11 @@ simulate = async (stpId) => {
                 tank.update({ level: '100', status: false})
             },12000*i+10000); 
             setTimeout(()=> {
-                Notification.create({ code: '202', msg: `Tank ${tank.dataValues.id} is Full`}).then( notif => {
-                    notif.setStp(stp);
+                Notification.create({ code: '202', msg: `Tank ${tank.dataValues.id} is Full`, stpId}).then( notif => {
+                    // notif.setStp(stp);
                 })
-                Notification.create({ code: '202', msg: `Tank ${tank.dataValues.id} is turned OFF`}).then( notif => {
-                    notif.setStp(stp);
+                Notification.create({ code: '203', msg: `Tank ${tank.dataValues.id} is turned OFF`, stpId}).then( notif => {
+                    // notif.setStp(stp);
                 })
             },12000*i+12000); 
         })

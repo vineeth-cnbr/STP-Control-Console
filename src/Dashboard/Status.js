@@ -94,7 +94,7 @@ class Status extends React.Component {
             <Grid.Column width={6}>
             
             <Header as='h1' icon>
-                <Icon name='recycle' color='green' style={{textAlign: 'left'}}/>
+                <Icon name='recycle' color='green'  circular/>
                 STP {this.state.stp.name} Status
             </Header>
             </Grid.Column>

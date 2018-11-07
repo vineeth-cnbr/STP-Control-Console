@@ -9,7 +9,13 @@ const restify = require('restify'),
   rjwt = require('restify-jwt-community'),
   jwt = require('jsonwebtoken');
   var sequelize = new Sequelize('stp', 'root', 'root', {
-    dialect: 'mysql'
+    dialect: 'mysql',
+    pool: {
+      max: 5,
+      min: 0,
+      idle: 20000,
+      acquire: 20000
+      }
   })
 
 const corsMiddleware = require('restify-cors-middleware')
@@ -28,7 +34,7 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.pre(cors.preflight)
 server.use(cors.actual);
 // server.pre( (req, res, next) => { res.header("Access-Control-Allow-Origin", "*"); res.header("Access-Control-Allow-Headers", "X-Requested-With"); });
-// server.use(rjwt(config.jwt).unless({ path: ['/auth'] }));
+server.use(rjwt(config.jwt).unless({ path: ['/auth'] }));
 
 server.get("/tank/:id", (req, res) => {
   console.log("GET TANK ID");
@@ -129,16 +135,19 @@ server.post('/stp/add', async (req, res) => {
     let stpCount = await Stp.count();
     let id = 'STP' + String(Number(100+stpCount+1));
     let stp = await Stp.create({ id, name, street, state, pincode });
-    userInstance.setStp(stp)
-    let tankCount = await Tank.count();
-    let tankResults = tankObjects.map(async (tank, i) => {
-      let { tankType, length, breadth, height } = tank;
-      let id = tankType + String(tankCount + i+1)
-      let tankInstance = await Tank.create({ id, tankType, length, breadth, height, level: 0, status: false });
-      tankInstance.setStp(stp);
-      return tankInstance['dataValues']
+    userInstance.setStp(stp);
+    var tankResults;
+    if(tankObjects.length != 0) {
+      let tankCount = await Tank.count();
+      tankResults = tankObjects.map(async (tank, i) => {
+        let { tankType, length, breadth, height } = tank;
+        let id = tankType + String(Number(100+tankCount+i+1));
+        let tankInstance = await Tank.create({ id, type: tankType, length, breadth, height, level: 0, status: false });
+        tankInstance.setStp(stp);
+        return tankInstance['dataValues']
 
-    });
+      });
+    }
     console.log(stp['dataValues']);
     res.send({
       stp: stp['dataValues'],
@@ -160,6 +169,20 @@ server.post("/username", (req, res) => {
         res.send(err);
     })
 
+});
+
+server.get("/notifications/:stpId", (req, res) => {
+  const { stpId } = req.params;
+  Notification.findAll({ where: { stpId }})
+    .then( notifications => {
+      allNotifications = notifications.map( notification => {
+        return notification.dataValues;
+      });
+      res.send( allNotifications );
+    })
+    .catch( err => {
+      res.send(err) 
+    });
 })
 
 

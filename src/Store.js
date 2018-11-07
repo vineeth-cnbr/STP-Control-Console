@@ -67,24 +67,44 @@ const Store = store({
 		storage.removeItem('token');
 		Store.isAuthenticated = false;
 		Store.user = {}
+	},
+
+	getUser: () => {
+		var storage = window.localStorage;
+		var token = storage.getItem('token');
+		axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+		axios.get("/user")
+					.then( data => {
+						data = data.data;
+						console.log("user", data);
+						Store.user = data.user;
+						Store.stp = data.stp;
+						Store.tanks = data.tanks;
+						Store.notifications = data.notifications;
+						Store.isAuthenticated = true;
+						console.log("User is authenticated")
+					})
+					.catch( err => console.log(err));
+		
 	}
 
 });
 
-var storage = window.localStorage;
-var token = storage.getItem('token');
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-axios.get("/user")
-      .then( data => {
-        data = data.data;
-        console.log("user", data.user);
-        Store.user = data.user;
-        Store.stp = data.stp;
-				Store.tanks = data.tanks;
-				Store.notifications = data.notifications;
-        Store.isAuthenticated = true;
-      })
-      .catch( err => console.log(err));
+Store.getUser();
+// var storage = window.localStorage;
+// var token = storage.getItem('token');
+// axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+// axios.get("/user")
+// 			.then( data => {
+// 				data = data.data;
+// 				console.log("user", data.user);
+// 				Store.user = data.user;
+// 				Store.stp = data.stp;
+// 				Store.tanks = data.tanks;
+// 				Store.notifications = data.notifications;
+// 				Store.isAuthenticated = true;
+// 			})
+// 			.catch( err => console.log(err));
 
 
 export default Store;

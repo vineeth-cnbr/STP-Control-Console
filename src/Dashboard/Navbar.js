@@ -25,19 +25,22 @@ class Navbar extends React.Component {
         this.setState({ visible: true });
         var storage = window.localStorage;
         var token = storage.getItem('token');
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-        axios.get("/user")
-            .then( data => {
-                data = data.data;
-                console.log("user", data.user);
-                Store.user = data.user;
-                Store.stp = data.stp;
-                Store.tanks = data.tanks;
-                Store.notifications = data.notifications;
-                Store.isAuthenticated = true;
-            })
-            .catch( err => console.log(err));
-
+        const getUser = Store.getUser;
+        // getUser();
+        var storage = window.localStorage;
+		var token = storage.getItem('token');
+		axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+		axios.get("/user")
+					.then( data => {
+						data = data.data;
+						console.log("user", data.user);
+						Store.user = data.user;
+						Store.stp = data.stp;
+						Store.tanks = data.tanks;
+						Store.notifications = data.notifications;
+						Store.isAuthenticated = true;
+					})
+					.catch( err => console.log(err));
     }
 
     state = { visible: true }
