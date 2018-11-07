@@ -13,12 +13,12 @@ const restify = require('restify'),
   })
 
 const corsMiddleware = require('restify-cors-middleware')
- 
+
 const cors = corsMiddleware({
   allowHeaders: ['Authorization'],
 })
- 
 
+var idit = 103;
 var server = restify.createServer();
 
 server.pre((req, res, next) => { console.log("hey", req.headers.authorization); next()})
@@ -30,7 +30,7 @@ server.use(cors.actual);
 // server.pre( (req, res, next) => { res.header("Access-Control-Allow-Origin", "*"); res.header("Access-Control-Allow-Headers", "X-Requested-With"); });
 // server.use(rjwt(config.jwt).unless({ path: ['/auth'] }));
 
-server.get("/tank/:id", (req, res) => {
+server.get("/tanks/:id", (req, res) => {
   console.log("GET TANK ID");
   var { id } = req.params;
   Tank.findById(id)
@@ -41,8 +41,80 @@ server.get("/tank/:id", (req, res) => {
     .catch(err => res.send(err));
 
 });
+server.post("/signup", (req, res) => {
+  var { id } = req.body;
+  var { password } = req.params;
+  var { role } = req.params;
+  User.create({username: id , password:password , role:role})
+    .then((tank) => {
+      res.send("OK");
+    })
+    .catch(err => {
+      res.send(err);
+    });
+})
+
+server.post("/settank", (req, res) => {
+  var { height } = req.params;
+  var { length } = req.params;
+  var { breadth } = req.params;
+  var { level } = req.params;
+  var { stpid } = req.params;
+  Tank.count()
+    .then( count => {
+      count = count+1;
+      var id = "C" + String(100+count);
+      console.log(id)
+      Tank.create({id:id , length:length, breadth:breadth, height:height,level:level,stpId:stpid})
+        .then((tank) => {
+          User.update
+          res.send("OK");
+        })
+        .catch(err => {
+          res.send(err);
+        });
+    })
+
+})
+
+server.post("/setstp", (req, res) => {
+  var { name } = req.params;
+  var { street } = req.params;
+  var { state } = req.params;
+  var { pin } = req.params;
+  var { user } = req.params;
+  Stp.count()
+    .then( count => {
+      count = count+1;
+      var id = "STP" + String(100+count);
+      console.log(id)
+      User.update({ stpId: id}, {where: {username:user}}).catch(err => {
+        res.send(err);
+      });
+      Stp.create({id:id , name:name,street:street, state:state, pincode:pin})
+        .then((tank) => {
+          res.send({"id":id});
+        })
+        .catch(err => {
+          res.send(err);
+        });
+    })
+
+})
+
 
 server.post("/tank/:id", (req, res) => {
+  var { status } = req.body;
+  var { id } = req.params;
+  Tank.update({ status }, { where: { id } })
+    .then((tank) => {
+      res.send("OK");
+    })
+    .catch(err => {
+      res.send(err);
+    });
+})
+server.post("/tanks/:id", (req, res) => {
   var { status } = req.body;
   var { id } = req.params;
   Tank.update({ status }, { where: { id } })
@@ -75,16 +147,25 @@ server.post('/auth', (req, res, next) => {
   });
 });
 
-//for android app 
+//for android app
 server.post("/login", (req, res) => {
+  console.log("/login")
   let { username, password } = req.body;
   console.log(username,password)
   auth.authenticate(username, password)
     .then(user => {
-      res.send(user)
+      var result = {
+        code: 0,
+        message: user
+      }
+      res.send(result)
     })
     .catch(err => {
-      res.send(err);
+      var result = {
+        code: 1,
+        message: err
+      }
+      res.send(result);
     })
 
 })
@@ -98,6 +179,17 @@ server.get('/user', (req, res, next) => {
   }
 });
 
+server.get('/user/:username',(req,res)=>{
+  var { username } = req.param;
+  console.log(" usename ",username);
+  User.findByPk(username)
+  .then((user)=> res.send(user))
+  .catch(err=> {
+    console.log(err);
+    res.send(err);
+  });
+
+})
 server.post("/isAuthenticated", (req, res) => {
   const { token } = req.body;
   res.send()
