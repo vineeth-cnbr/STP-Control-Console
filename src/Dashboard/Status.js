@@ -1,5 +1,5 @@
 import React from 'react';
-import { Loader, Header, Icon, Image, Menu, Segment, Sidebar, Progress, Grid, Container, Button, Radio } from 'semantic-ui-react'
+import { Loader, Header, Icon, Image, Menu, Segment, Sidebar, Progress, Grid, Container, Button, Radio, Message } from 'semantic-ui-react'
 import axios from 'axios';
 import Store from '../Store'
 
@@ -101,12 +101,7 @@ class Status extends React.Component {
             </Grid.Row>
             
                 <Grid.Row>
-                    {/* <Grid.Column>
-                        <h5>Collection Tank Capacity</h5> <p>State: {this.cState} </p><Radio toggle checked={this.state.cState} onChange={this.changeCStatus} />
-                        <Progress percent={this.state.cTankPercent} size='big' progress indicating >{ (this.state.loading)? <Loader active inline >Loading</Loader>: ""}</Progress> */}
-                        {/* <Button onClick={this.cIncrement}>Increment</Button> */}
-                    {/* </Grid.Column> */}
-                {/* <Image src='/images/wireframe/paragraph.png' /> */}
+                    { (tanks.length==0)? <Message>Ther are no tanks added to this STP. Please Add tanks in the profile Section</Message>:''}
                         { tanks.map( (tank,i) => {
                             return (
                                 <Grid.Column width={6}>

@@ -178,6 +178,7 @@ class Signup extends Component {
                     })
                 }
             }).catch( err => {
+                console.log(err);
                 this.setState({
                     isError: true,
                     isUsernameLoading: false,
@@ -211,7 +212,7 @@ class Signup extends Component {
                         <Form onSubmit={this.handleSubmit}>
                             <br /><br />
                             <h1 style={{color: 'rgb(0,129,227)'}}>New User Signup</h1>
-                            <Form.Field>
+                            <Form.Field required>
                                 <label>Name </label>
                                 <Input type='text' iconPosition='left' icon='address card outline' name='name' placeholder='Name' onChange={this.addAtt} required />
                             </Form.Field>

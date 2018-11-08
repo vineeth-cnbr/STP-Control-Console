@@ -40,7 +40,8 @@ class Navbar extends React.Component {
 						Store.notifications = data.notifications;
 						Store.isAuthenticated = true;
 					})
-					.catch( err => console.log(err));
+                    .catch( err => console.log(err));
+        getUser();
     }
 
     state = { visible: true }
@@ -77,7 +78,7 @@ class Navbar extends React.Component {
                     
             </Menu>
             
-            <Sidebar.Pushable as={Segment} style={{ 'paddingLeft': '150px','paddingTop': '0px', 'height': '1000px'}}>
+            <Sidebar.Pushable as={Segment} style={{ 'paddingLeft': '150px','paddingTop': '0px', 'height': '2000px'}}>
                 <Sidenav visible={this.state.visible} signout={signout} />
                     <div>
                         { (user.stpId!=null)?

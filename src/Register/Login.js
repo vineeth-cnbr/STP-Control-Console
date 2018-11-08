@@ -7,6 +7,7 @@ import 'semantic-ui-css/semantic.min.css';
 import { withCookies } from 'react-cookie';
 import { view } from 'react-easy-state';
 import Store from '../Store';
+import axios from 'axios'
 
 class Login extends Component {
 	constructor(props) {
@@ -59,7 +60,7 @@ class Login extends Component {
 				console.log("auth", token, iat, exp);
 				var storage = window.localStorage;
 				storage.setItem('token', token);
-				// axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+				axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 				this.setState({
 					loggedIn: true,
 					isError: false

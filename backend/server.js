@@ -35,7 +35,7 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.pre(cors.preflight)
 server.use(cors.actual);
 // server.pre( (req, res, next) => { res.header("Access-Control-Allow-Origin", "*"); res.header("Access-Control-Allow-Headers", "X-Requested-With"); });
-server.use(rjwt(config.jwt).unless({ path: ['/auth'] }));
+server.use(rjwt(config.jwt).unless({ path: ['/auth',"/username", "/signup"] }));
 
 server.get("/tank/:id", (req, res) => {
   console.log("GET TANK ID");
