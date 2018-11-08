@@ -1,10 +1,28 @@
 import React, {Component} from 'react';
-import { Loader, Header, Icon, Table, Menu, Segment, Sidebar, Confirm, Message, Progress, Grid, Container, Button, Radio, Form, Input } from 'semantic-ui-react'
+import { Loader, Modal, Select, Header, Icon, Table, Menu, Segment, Sidebar, Confirm, Message, Progress, Grid, Container, Button, Radio, Form, Input } from 'semantic-ui-react'
 import axios from 'axios';
 import { view } from 'react-easy-state';
 import Store from '../Store';
 import { Redirect } from 'react-router-dom';
 axios.defaults.baseURL = 'http://localhost:8080';
+const opts = [
+    {
+        key:'AR',
+        value:'AR',
+        text:'Aeration Tank'
+    },
+    {
+        key:'DC',
+        value:'DC',
+        text:'Decan Tank'
+    },
+    {
+        key:'CO',
+        value:'CO',
+        text:'Collection Tank'
+    },
+
+];
 
 class Profile extends Component {
     constructor(props){
@@ -191,6 +209,71 @@ class Profile extends Component {
 }
 
 class TankTable extends Component {
+    constructor(props){
+        super(props)
+        this.state={
+            modalState:false,
+            tank_type : '',
+            height:0,
+            length:0,
+            breadth:0,
+            err:false,
+            stpid: Store.stp.id,
+        };
+
+        this.changeBreadth = this.changeBreadth.bind(this);
+        this.changeLength = this.changeLength.bind(this);
+        this.changeHeight = this.changeHeight.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.select = this.select.bind(this);
+    }
+
+
+
+    handleSubmit(){
+        let {length, breadth, height, stpid, tank_type} = this.state;
+        axios.post('/tank/add',{
+            length,
+            breadth,
+            height,
+            stpid,
+            tank_type
+        }).then(data =>{
+            console.log(data['dataValues']);
+            Store.getUser();
+            this.setState({modalState:false})
+        })
+        .catch(err =>{
+            console.log(err);
+        })
+    }
+
+    changeHeight(event){
+        this.setState({
+            err:false,
+            height: event.target.value
+        })
+    }
+
+    changeBreadth(event){
+        this.setState({
+            err:false,
+            breadth: event.target.value
+        })
+    }
+
+    changeLength(event){
+        this.setState({
+            err:false,
+            length: event.target.value
+        })
+    }
+    
+
+    select(event, data) {
+		this.setState({ tank_type : data.value });
+    }
+
     render() {
         const tanks = this.props.tanks;
         return (
@@ -218,11 +301,27 @@ class TankTable extends Component {
                 <Table.Footer fullWidth>
                     <Table.Row>
                         <Table.HeaderCell colSpan='4'>
-                        <Button floated='left' icon labelPosition='left' primary size='tiny'>
-                            <Icon name='user' /> Add Tank
-                        </Button>
+                        <Modal open={this.state.modalState} fullWidth trigger={<Button onClick={()=>{this.setState({modalState:true})}} floated='left' icon labelPosition='left' primary size='tiny'>
+                            <Icon name='user' /> Add Tank </Button>}>
+                        
+                                <Modal.Header>Tank details</Modal.Header>
+                                <Modal.Content >
+                                    <Form error={this.state.err}>
+                                        <Form.Field control={Select} label={`Tank type`} options={opts} placeholder='Tank type...' onChange={this.select}  required />
+                                        <Form.Field required>
+                                            <Header>Tank Dimensions:</Header>
+                                            <Input label={{ basic: true, content: 'm' }} labelPosition='right' type="number" placeholder="Length" onInput={this.validate}  onChange={this.changeLength} required />
+                                            <Input label={{ basic: true, content: 'm' }} labelPosition='right' type="number" placeholder="Breadth" onInput={this.validate}  onChange={this.changeBreadth} required />
+                                            <Input label={{ basic: true, content: 'm' }} labelPosition='right' type="number" placeholder="Height" onInput={this.validate} onChange={this.changeHeight} required />
+                                        </Form.Field>
+                                        <Button primary onClick={this.handleSubmit}>Submit</Button>
+                                        <Button onClick={() =>this.setState({modalState:false})} negative>Cancel</Button>
+                                    </Form>
+                                </Modal.Content>
+                                </Modal>
                         </Table.HeaderCell>
                         <Table.HeaderCell />
+                        
                         
                         {/* <Table.HeaderCell />
                         <Table.HeaderCell />

@@ -281,8 +281,27 @@ server.post("/setstp", (req, res) => {
         });
     })
 
-})
+}) 
 
+server.post('/tank/add', async(req,res) =>{
+ try{
+  let {length, breadth, height, stpid, tank_type} = req.body;
+  let tankCount = await Tank.count();
+  // tankResults = tankObjects.map(async (tank, i) => {
+    // let { tankType, length, breadth, height } = tank;
+    let id = tank_type + String(Number(100+tankCount+1));
+    let tankInstance = await Tank.create({ id, type: tank_type, length, breadth, height, level: 0, status: false, stpId: stpid });
+    // tankInstance.setStp(stp);
+    // return tankInstance['dataValues'];
+    // });
+  
+    res.send({data: tankInstance, code: 200});
+}
+ catch (err){
+  console.log(err);
+  res.send(null);
+ }
+});
 
 server.post("/tanks/:id", (req, res) => {
   var { status } = req.body;
@@ -295,6 +314,7 @@ server.post("/tanks/:id", (req, res) => {
       res.send(err);
     });
 })
+
 
 
 //for android app
