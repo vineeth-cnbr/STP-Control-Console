@@ -204,6 +204,7 @@ class Signup extends Component {
     render(){
         if(!this.state.hasCreated) {
             return (
+                <div className='signup'>
                 <Container>
                     <Grid>
                     <Grid.Column width={6}>
@@ -252,6 +253,7 @@ class Signup extends Component {
                     </Grid.Column>
                     </Grid>
                 </Container>
+                </div>
             )
         }
         else {

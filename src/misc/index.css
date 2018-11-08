@@ -1,4 +1,4 @@
-.ui.segment.pushable {
+.ui.segment.pushable, .signup {
   height: -webkit-fill-available;
   height: 100%;
   margin-top: 0px;

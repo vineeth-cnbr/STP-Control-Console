@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 // import logo from './logo.svg';
 import '../misc/App.css';
-import { Select, Button, Form, Grid, Container,Sidebar, Segment, Input } from 'semantic-ui-react';
+import { Select, Button, Form, Grid, Container,Sidebar, Segment, Input, Header, Icon } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 import axios from 'axios';
 import { Redirect } from 'react-router';
@@ -10,19 +10,19 @@ import Store from '../Store';
 
 const opts = [
     {
-        key:'aeration',
-        value:'air',
+        key:'AR',
+        value:'AR',
         text:'Aeration Tank'
     },
     {
-        key:'decan',
-        value:'decan',
+        key:'DC',
+        value:'DC',
         text:'Decan Tank'
     },
     {
-        key:'set',
-        value:'set',
-        text:'settling Tank'
+        key:'CO',
+        value:'CO',
+        text:'Collection Tank'
     },
 
 ];
@@ -139,7 +139,12 @@ class Setup extends Component {
                 <Container>
                     <div>
                     <Grid verticalAlign='middle' >
-                    
+                    <Grid.Row>
+                    <Header as='h1' icon textAlign='center' >
+                        <Icon name='settings' color='black' circular/>
+                        STP Setup page
+                    </Header>
+                    </Grid.Row>
                     <Grid.Row centered> 
                         <Form error>
                         <Grid.Column width={6}>
