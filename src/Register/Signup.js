@@ -217,27 +217,27 @@ class Signup extends Component {
                                 <Input type='text' iconPosition='left' icon='address card outline' name='name' placeholder='Name' onChange={this.addAtt} required />
                             </Form.Field>
                             
-                            <Form.Field>
+                            <Form.Field required>
                                 <label>Password </label>
                                 <Input type='password' iconPosition='left' icon='key' name='password' placeholder='Password' onInput={this.passChange} onChange={this.addAtt} required />
                             </Form.Field>
 
-                            <Form.Field>
+                            <Form.Field required>
                                 <label>email </label>
                                 <Input type='email' iconPosition='left' name='email' icon='mail' placeholder='e-mail Address' onInput={this.emailChange} onChange={this.addAtt} required />
                             </Form.Field>
 
-                            <Form.Field error={this.state.usernameError}>
+                            <Form.Field error={this.state.usernameError} required>
                                 <label>Username </label>
                                 <Input type='text' iconPosition='left' name='username' error={this.state.usernameError} loading={this.state.isUsernameLoading} icon={this.state.usernameIcon} placeholder='Username' onInput={this.addAtt} onChange={this.onChangeUsername} required />
                             </Form.Field>
 
-                            <Form.Field>
+                            <Form.Field required>
                                 <label>Role</label>
                                 <Select placeholder="Role" name ='role' options={opts} onChange={this.selectRole} required/>
                             </Form.Field>
 
-                            <Form.Field>
+                            <Form.Field required>
                                 <label>Phone no. </label>
                                 <Input type='text' iconPosition='left' icon='phone' placeholder='Phone Number' onInput={this.phoneChange} onChange={(e) => {this.setState( { user: Object.assign(this.state.user,{phone: e.target.value})})}} required />
                             </Form.Field>
