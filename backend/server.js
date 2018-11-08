@@ -9,11 +9,17 @@ const restify = require('restify'),
   rjwt = require('restify-jwt-community'),
   jwt = require('jsonwebtoken');
   var sequelize = new Sequelize('stp', 'root', 'root', {
-    dialect: 'mysql'
+    dialect: 'mysql',
+    pool: {
+      max: 5,
+      min: 0,
+      idle: 20000,
+      acquire: 20000
+      }
   })
 
 const corsMiddleware = require('restify-cors-middleware')
- 
+
 const cors = corsMiddleware({
   allowHeaders: ['Authorization'],
   origins: ['*']
@@ -22,7 +28,7 @@ const cors = corsMiddleware({
 // 'http://localhost:3000/dashboard/profile'
 var server = restify.createServer();
 
-// server.pre((req, res, next) => { console.log("hey", req.headers.authorization); next()})
+server.pre((req, res, next) => { console.log("hey", req.headers.authorization); next()})
 server.use(restify.plugins.queryParser({ mapParams: true }));
 server.use(restify.plugins.bodyParser({ mapParams: true }));
 server.use(restify.plugins.acceptParser(server.acceptable));
@@ -75,20 +81,6 @@ server.post('/auth', (req, res, next) => {
     });
   });
 });
-
-//for android app 
-server.post("/login", (req, res) => {
-  let { username, password } = req.body;
-  console.log(username,password)
-  auth.authenticate(username, password)
-    .then(user => {
-      res.send(user)
-    })
-    .catch(err => {
-      res.send(err);
-    })
-
-})
 
 server.post("/signup", (req, res) => {
   var userBody = req.body;
@@ -144,16 +136,19 @@ server.post('/stp/add', async (req, res) => {
     let stpCount = await Stp.count();
     let id = 'STP' + String(Number(100+stpCount+1));
     let stp = await Stp.create({ id, name, street, state, pincode });
-    userInstance.setStp(stp)
-    let tankCount = await Tank.count();
-    let tankResults = tankObjects.map(async (tank, i) => {
-      let { tankType, length, breadth, height } = tank;
-      let id = tankType + String(tankCount + i+1)
-      let tankInstance = await Tank.create({ id, tankType, length, breadth, height, level: 0, status: false });
-      tankInstance.setStp(stp);
-      return tankInstance['dataValues']
+    userInstance.setStp(stp);
+    var tankResults;
+    if(tankObjects.length != 0) {
+      let tankCount = await Tank.count();
+      tankResults = tankObjects.map(async (tank, i) => {
+        let { tankType, length, breadth, height } = tank;
+        let id = tankType + String(Number(100+tankCount+i+1));
+        let tankInstance = await Tank.create({ id, type: tankType, length, breadth, height, level: 0, status: false });
+        tankInstance.setStp(stp);
+        return tankInstance['dataValues']
 
-    });
+      });
+    }
     console.log(stp['dataValues']);
     res.send({
       stp: stp['dataValues'],
@@ -209,6 +204,118 @@ server.post("/username", (req, res) => {
     }).catch( err => {
         console.log(err);
         res.send(err);
+    })
+
+});
+
+server.get("/notifications/:stpId", (req, res) => {
+  const { stpId } = req.params;
+  Notification.findAll({ where: { stpId }})
+    .then( notifications => {
+      allNotifications = notifications.map( notification => {
+        return notification.dataValues;
+      });
+      res.send( allNotifications );
+    })
+    .catch( err => {
+      res.send(err) 
+    });
+})
+
+
+server.get("/tanks/:id", (req, res) => {
+  console.log("GET TANK ID");
+  var { id } = req.params;
+  Tank.findById(id)
+    .then(tank => {
+      console.log(tank)
+      res.send(tank)
+    })
+    .catch(err => res.send(err));
+
+});
+
+server.post("/settank", (req, res) => {
+  var { height } = req.params;
+  var { length } = req.params;
+  var { breadth } = req.params;
+  var { level } = req.params;
+  var { stpid } = req.params;
+  Tank.count()
+    .then( count => {
+      count = count+1;
+      var id = "C" + String(100+count);
+      console.log(id)
+      Tank.create({id:id , length:length, breadth:breadth, height:height,level:level,stpId:stpid})
+        .then((tank) => {
+          User.update
+          res.send(id);
+        })
+        .catch(err => {
+          res.send(err);
+        });
+    })
+
+})
+
+server.post("/setstp", (req, res) => {
+  var { name } = req.params;
+  var { street } = req.params;
+  var { state } = req.params;
+  var { pin } = req.params;
+  var { user } = req.params;
+  Stp.count()
+    .then( count => {
+      count = count+1;
+      var id = "STP" + String(100+count);
+      console.log(id)
+      User.update({ stpId: id}, {where: {username:user}}).catch(err => {
+        res.send(err);
+      });
+      Stp.create({id:id , name:name,street:street, state:state, pincode:pin})
+        .then((tank) => {
+          res.send({"id":id});
+        })
+        .catch(err => {
+          res.send(err);
+        });
+    })
+
+})
+
+
+server.post("/tanks/:id", (req, res) => {
+  var { status } = req.body;
+  var { id } = req.params;
+  Tank.update({ status }, { where: { id } })
+    .then((tank) => {
+      res.send("OK");
+    })
+    .catch(err => {
+      res.send(err);
+    });
+})
+
+
+//for android app
+server.post("/login", (req, res) => {
+  console.log("/login")
+  let { username, password } = req.body;
+  console.log(username,password)
+  auth.authenticate(username, password)
+    .then(user => {
+      var result = {
+        code: 0,
+        message: user
+      }
+      res.send(result)
+    })
+    .catch(err => {
+      var result = {
+        code: 1,
+        message: err
+      }
+      res.send(result);
     })
 
 })
