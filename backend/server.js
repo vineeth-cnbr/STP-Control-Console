@@ -16,9 +16,10 @@ const corsMiddleware = require('restify-cors-middleware')
  
 const cors = corsMiddleware({
   allowHeaders: ['Authorization'],
+  origins: ['*']
 })
  
-
+// 'http://localhost:3000/dashboard/profile'
 var server = restify.createServer();
 
 // server.pre((req, res, next) => { console.log("hey", req.headers.authorization); next()})
@@ -28,7 +29,7 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.pre(cors.preflight)
 server.use(cors.actual);
 // server.pre( (req, res, next) => { res.header("Access-Control-Allow-Origin", "*"); res.header("Access-Control-Allow-Headers", "X-Requested-With"); });
-server.use(rjwt(config.jwt  ).unless({ path: ['/auth', '/signup', '/stp/add', '/username'] }));
+server.use(rjwt(config.jwt  ).unless({ path: ['/auth', '/signup', '/stp/add', '/username', '/profile/update'] }));
 
 server.get("/tank/:id", (req, res) => {
   console.log("GET TANK ID");
@@ -162,6 +163,42 @@ server.post('/stp/add', async (req, res) => {
     console.log(err);
     res.send(err);
   }
+})
+
+server.post('/profile/update', (req,res) =>{
+    const {name, email, phone, username} = req.body;
+    console.log(name,email,username,phone, 'are the details')
+    User.update(
+      {
+        name: name,
+        email: email,
+        phone: phone
+      },
+      {where: {username: username} }
+    )
+    .then((rows) =>{
+      if(rows!=0){
+        // console.log(newUser, 'is the new user');
+        console.log(rows);
+        User.findByPk(username).then( user =>{
+          console.log(user['dataValues']);
+          // console.log(user['dataValues']);
+          res.send({
+            code: 200,
+            updated: user['dataValues'],
+          })
+        })
+      }
+      else{
+        return {err: 'no values updated'}
+      }
+      
+    })
+  
+  .catch(err =>{
+    console.log(err);
+    res.send(err);
+  })
 })
 
 server.post("/username", (req, res) => {

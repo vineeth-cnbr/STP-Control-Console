@@ -1,16 +1,116 @@
 import React, {Component} from 'react';
-import { Loader, Header, Icon, Table, Menu, Segment, Sidebar, Progress, Grid, Container, Button, Radio, Form, Input } from 'semantic-ui-react'
+import { Loader, Header, Icon, Table, Menu, Segment, Sidebar, Confirm, Message, Progress, Grid, Container, Button, Radio, Form, Input } from 'semantic-ui-react'
 import axios from 'axios';
 import { view } from 'react-easy-state';
 import Store from '../Store';
+import { Redirect } from 'react-router-dom';
+axios.defaults.baseURL = 'http://localhost:8080';
+
 class Profile extends Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            updateObj : {
+                name: Store.user.name,
+                email: Store.user.email,
+                phone: Store.user.phone
+            },
+            currentUser:  {
+                name: Store.user.name,
+                email: Store.user.email,
+                phone: Store.user.phone
+            },
+            redirect : false,
+            updateErr: true,
+            open: false,
+            errMessage: 'The updated values and current values cannot be same',
+            result: 'show the modal to capture a result',
+            
+        }
+        
+        this.show = this.show.bind(this);
+        this.handleConfirm = this.handleConfirm.bind(this);
+        this.handleCancel = this.handleCancel.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    show(){
+        console.log(this.state.open);
+         this.setState({ open: true });
+    }
+
+    handleCancel(){
+        this.setState({ result: 'cancelled', open: false });
+    }
+
+    handleConfirm(){
+        this.setState({ result: 'confirmed', open: false, updateErr: true, errMessage: ''  });
+        // console.log(this.state.updateObj);
+        var bool = true;
+        Object.keys(this.state.updateObj).map( (keys) =>{
+                                                            console.log('handle confirm;')
+                                                            console.log(this.state.currentUser[keys]!=this.state.updateObj[keys]);
+                                                            if(this.state.currentUser[keys]!=this.state.updateObj[keys]){
+                                                                console.log("changing to false");
+                                                                // this.setState({ updateErr: false }, () => {console.log('new vavlue',this.state.updateErr);});
+                                                                bool = false;
+                                                            }
+                                                            else{
+                                                                // this.setState({errMessage: 'Value is same in '+keys})
+                                                                console.log(this.state.updateErr);
+                                                            }
+                                                        });
+        
+        console.log('new val11',bool);
+        console.log(this.state.errMessage)
+        if(!bool){
+
+            this.handleSubmit();
+
+        }
+        else{
+            this.setState({
+                updateErr: bool,
+                errMessage: 'Make changes to edit your profile'
+            })
+            console.log(this.state.errMessage, this.state.updateErr);
+        }
+    }
+        
+    handleSubmit(){
+        let username = Store.user.username;
+        let name = this.state.updateObj['name'];
+        let email = this.state.updateObj['email'];
+        let phone = this.state.updateObj['phone'];
+        axios.post('/profile/update',{
+            name,
+            email,
+            phone,
+            username
+        }).then((data) =>{
+            console.log(data.data.updated, 'is the new user');
+            if(data.data.code == 200){
+                Store.user.name = data.data.updated.name,
+                Store.user.phone = data.data.updated.phone,
+                Store.user.email = data.data.updated.email;
+                this.setState({redirect : true});
+            }
+        })
+    }
+
+
     render() {
+        // let { redirect } = this.state;
+        // if(redirect){
+        //     return <Redirect to='/dashboard' />
+        // }
         const user = Store.user;
         const stp = Store.stp;
         const tanks = Store.tanks;
         console.log("tanks")
         tanks.map(tank => console.log(tank.id))
         console.log(tanks);
+        // console.log('checking', updateObj == currentUser)
         return (
             <Sidebar.Pusher style={{ 'paddingLeft': '150px','paddingTop': '0px','height': '1000px'}}>
             <Segment basic>
@@ -27,24 +127,36 @@ class Profile extends Component {
                             <Form >
                                 <Form.Field>
                                     <label>Name:</label>
-                                    <Input value={user.name} type="text" />
+                                    <Input name='username' defaultValue={user.name} onChange={(e,data)=>{let att = {}; att['name']=data.value; this.setState({updateObj: Object.assign(this.state.updateObj,att)})}} type="text" />
                                 </Form.Field>
-                                <Form.Field>
-                                    <label>Username:</label>
-                                    <Input value={user.username} type="text" />
-                                </Form.Field>
-                                
+                                                                
                                 <Form.Field>
                                     <label>Email:</label>
-                                    <Input value={user.email} type="email" />
+                                    <Input name='email' defaultValue={user.email} onChange={(e,data)=>{let att = {}; att['email']=data.value; this.setState({updateObj: Object.assign(this.state.updateObj,att)})}} type="email" />
                                 </Form.Field>
                                 
                                 <Form.Field>
                                     <label>Phone:</label>
-                                    <Input value={user.phone} type="phone" />
+                                    <Input name='phone' defaultValue={user.phone} onChange={(e,data)=>{let att = {}; att['phone']=data.value; this.setState({updateObj: Object.assign(this.state.updateObj,att)})}} type="number" />
                                 </Form.Field>
                             </Form>
+                            <br/>
+                            {!((this.state.currentUser.name == this.state.updateObj.name) && (this.state.currentUser.phone == this.state.updateObj.phone) && (this.state.currentUser.email == this.state.updateObj.email))?
+                                <Button positive onClick={this.show} >Submit</Button>
+                                : <Button negative onClick={this.show} disabled>Submit</Button>
+                            }
+                            
+                            <Confirm open={this.state.open} onCancel={this.handleCancel} onConfirm={this.handleConfirm } />
                         </Grid.Column>
+                        <Grid.Column width={6}>
+                        {
+                            (this.state.redirect)? <Message success header='Success' content='Updation completed successfully' /> : <br/>
+                        }
+
+                        {   ((this.state.currentUser.name == this.state.updateObj.name) && (this.state.currentUser.phone == this.state.updateObj.phone) && (this.state.currentUser.email == this.state.updateObj.email))?
+                            <Message error header='Error' content={this.state.errMessage} /> 
+                            : <br></br> }
+                    </Grid.Column>
                     </Grid.Row>  
                     <Grid.Row>
                     <Header as='h2' icon>
@@ -121,4 +233,7 @@ class TankTable extends Component {
         )
     }
 }
+
+
+  
 export default view(Profile);
