@@ -4,6 +4,9 @@ import axios from 'axios';
 import Store from '../Store'
 
 axios.defaults.baseURL = 'http://localhost:8080';
+var storage = window.localStorage;
+var token = storage.getItem('token');
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 
 
 class Status extends React.Component {
@@ -13,17 +16,12 @@ class Status extends React.Component {
         this.setState({
             stp,
             tanks,
+            isStatusLoading: false
         });
         this.update = this.update.bind(this);
+        this.updateStatus = this.updateStatus.bind(this)
+        this.changeBinary = this.changeBinary.bind(this);
     }
-
-    // changeCStatus = (event) => {
-    //     console.log(event);
-    //     axios.post("/tank/C101", { status: event.target.value })
-    //         .then((respose)=> {
-    //             console.log(respose.data[0])
-    //         })
-    // }
 
     componentWillMount() {
         const { stp, tanks } = Store;
@@ -44,7 +42,32 @@ class Status extends React.Component {
         clearInterval(this.timerID);
 
     }
+
+    updateStatus(id,status) {
+        this.setState({
+            isStatusLoading: true,
+        })
+        var storage = window.localStorage;
+        var token = storage.getItem('token');
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+        axios.post(`/tank/${id}`, {
+                status: !status
+             })
+            .then( data => {
+                let res = data.data;
+                console.log(res);
+                this.setState({
+                    isStatusLoading: false
+                })
+            })
+            .catch(console.log)
+
+    }
     
+    changeBinary(id) {
+        id = !id;
+        console.log(id);
+    }
 
     update() {
 
@@ -62,29 +85,15 @@ class Status extends React.Component {
                 })
             })
         // console.log("update", newTanks);
-       
-        
-        
-        // axios.get("/tank/C101")
-        //         .then(function (response) {
-        //             var { id, status, level } = response.data;
-        //             console.log(id,status,level);
-        //             this.setState( {
-        //                 cTankPercent: level,
-        //                 cState: status,
-        //                 loading: false
-        //               });
-                  
-        //         }.bind(this))
-        //         .catch(function(error){
-        //             console.log("Not able to fetch API cuz", error);
-        //         }.bind(this))
 
     }
+
+
     render() {
         // console.log("status",this.props.auth)
-
+        const { user } = Store;
         const { tanks } = this.state;
+        console.log(tanks);
         return (
             <Sidebar.Pusher style={{ 'paddingLeft': '150px','paddingTop': '0px','height': '1000px'}}>
             <Segment basic>
@@ -101,12 +110,17 @@ class Status extends React.Component {
             </Grid.Row>
             
                 <Grid.Row>
-                    { (tanks.length==0)? <Message>Ther are no tanks added to this STP. Please Add tanks in the profile Section</Message>:''}
+                    { (tanks.length==0)? <Message>There are no tanks added to this STP. Please Add tanks in the profile Section</Message>:''}
                         { tanks.map( (tank,i) => {
                             return (
                                 <Grid.Column width={6}>
                                     <h5>Tank {tank.id}</h5>
                                     <h5>Status: <span style={{color: (tank.status)?'green':'red'}}>{tank.status? "On": "Off"}</span></h5>
+                                    {(user.role=='admin' || user.role=='op')?
+                                        <Button loading={this.state.isStatusLoading} toggle active={tank.status} onClick={(e) => this.updateStatus(tank.id,tank.status)} >
+                                            {(tank.status)?"Force Stop":"Force Start"}
+                                        </Button>:''}
+                                    <br /><br />
                                     <Progress percent = {tank.level} size='big' progress indicating ></Progress>
                                 </Grid.Column>
                             )
