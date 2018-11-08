@@ -24,8 +24,8 @@ const cors = corsMiddleware({
   allowHeaders: ['Authorization'],
   origins: ['*']
 })
- 
-// 'http://localhost:3000/dashboard/profile'
+
+var idit = 103;
 var server = restify.createServer();
 
 server.pre((req, res, next) => { console.log("hey", req.headers.authorization); next()})
@@ -35,7 +35,7 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.pre(cors.preflight)
 server.use(cors.actual);
 // server.pre( (req, res, next) => { res.header("Access-Control-Allow-Origin", "*"); res.header("Access-Control-Allow-Headers", "X-Requested-With"); });
-server.use(rjwt(config.jwt  ).unless({ path: ['/auth', '/signup', '/stp/add', '/username', '/profile/update'] }));
+server.use(rjwt(config.jwt).unless({ path: ['/auth'] }));
 
 server.get("/tank/:id", (req, res) => {
   console.log("GET TANK ID");
