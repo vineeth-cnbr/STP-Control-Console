@@ -338,6 +338,33 @@ server.post("/login", (req, res) => {
       res.send(result);
     })
 
+});
+
+server.get("/stps", (req, res) => {
+  Stp.findAll()
+    .then( stps => {
+      console.log("STPs", stps);
+      stps = stps.map( stp => {
+        return stp.dataValues;
+      })
+      res.send(stps);
+    })
+    .catch( err => {
+      console.log(err);
+      res.send(err);
+    })
+});
+
+server.post("/stp/set", (req, res) => {
+  var { stpId, username } = req.body;
+  User.update({ stpId }, { where: { username } })
+    .then( data => {
+      res.send(data);
+    })
+    .catch( err => {
+      console.log(err);
+      res.send(err);
+    })
 })
 
 

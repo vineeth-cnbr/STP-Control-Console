@@ -276,6 +276,7 @@ class TankTable extends Component {
 
     render() {
         const tanks = this.props.tanks;
+        const user = Store.user;
         return (
             <Table color='olive'>
                 <Table.Header>
@@ -298,7 +299,8 @@ class TankTable extends Component {
                         </Table.Row>
                     ))}
                 </Table.Body>
-                <Table.Footer fullWidth>
+                {(user.role=='sup')? '':
+                    <Table.Footer fullWidth>
                     <Table.Row>
                         <Table.HeaderCell colSpan='4'>
                         <Modal open={this.state.modalState} fullWidth trigger={<Button onClick={()=>{this.setState({modalState:true})}} floated='left' icon labelPosition='left' primary size='tiny'>
@@ -328,6 +330,9 @@ class TankTable extends Component {
                         <Table.HeaderCell /> */}
                     </Table.Row>
                 </Table.Footer>
+            
+                }
+                
             </Table>
         )
     }

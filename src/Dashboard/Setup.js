@@ -51,6 +51,7 @@ class Setup extends Component {
         this.addAttribute = this.addAttribute.bind(this);
         this.removetank = this.removetank.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.redirectFunction = this.redirectFunction.bind(this);
     }
 
     addtank(){
@@ -108,7 +109,18 @@ class Setup extends Component {
 
     }
 
+    redirectFunction() {
+        this.setState({
+            isSubmitted: true
+        });
+        Store.getUser();
+    }
+
     handleSubmit() {
+        
+        var storage = window.localStorage;
+        var token = storage.getItem('token');
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
         var { tanks, name, street, state, pincode }  = this.state;
         var { username } = Store.user;
         let isValid = true;
@@ -157,60 +169,66 @@ class Setup extends Component {
     render(){
         const user = Store.user;
         if(user.stpId==null && !this.state.isSubmitted ) {
-            return (
-                // <Sidebar.Pusher style={{ 'paddingLeft': '150px','paddingTop': '0px', 'height': '1000px'}}>
-                <Sidebar.Pusher >
-                <Segment basic>
-                <Container>
-                    <div>
-                    <Form error={this.state.isError} onSubmit={this.handleSubmit}>
-                    <Grid verticalAlign='middle' >
-                    <Grid.Row>
-                    <Header as='h1' icon textAlign='center' >
-                        <Icon name='settings' color='black' circular/>
-                        STP Setup page
-                    </Header>
-                    </Grid.Row>
-                    <Grid.Row centered> 
-                        
-                        <Grid.Column width={6}>
-                                <Form.Field>
-                                    <label>Name: </label>
-                                    <Input type="text" placeholder="Name" onChange={(e)=>{this.setState({name:e.target.value})}} required />
-                                </Form.Field>
-                                <Form.Field>
-                                    <label>Address: </label>
-                                    <Input type="text" placeholder="Street/Locality" onChange={(e)=>{this.setState({street:e.target.value})}} required />
-                                    <Input type="text" placeholder="District/State" onChange={(e)=>{this.setState({state:e.target.value})}} required />
-                                    <Input type="text" placeholder="Pincode" onChange={(e)=>{this.setState({pincode:e.target.value})}} pattern="(\d{6})" required />
+            if(user.role=='sup') {
+                return (
+                    <SelectStp user={user} redirectFunction={this.redirectFunction} />
+                )
+            }else {
+                return (
+                    // <Sidebar.Pusher style={{ 'paddingLeft': '150px','paddingTop': '0px', 'height': '1000px'}}>
+                    <Sidebar.Pusher >
+                    <Segment basic>
+                    <Container>
+                        <div>
+                        <Form error={this.state.isError} onSubmit={this.handleSubmit}>
+                        <Grid verticalAlign='middle' >
+                        <Grid.Row>
+                        <Header as='h1' icon textAlign='center' >
+                            <Icon name='settings' color='black' circular/>
+                            STP Setup page
+                        </Header>
+                        </Grid.Row>
+                        <Grid.Row centered> 
+                            
+                            <Grid.Column width={6}>
+                                    <Form.Field>
+                                        <label>Name: </label>
+                                        <Input type="text" placeholder="Name" onChange={(e)=>{this.setState({name:e.target.value})}} required />
+                                    </Form.Field>
+                                    <Form.Field>
+                                        <label>Address: </label>
+                                        <Input type="text" placeholder="Street/Locality" onChange={(e)=>{this.setState({street:e.target.value})}} required />
+                                        <Input type="text" placeholder="District/State" onChange={(e)=>{this.setState({state:e.target.value})}} required />
+                                        <Input type="text" placeholder="Pincode" onChange={(e)=>{this.setState({pincode:e.target.value})}} pattern="(\d{6})" required />
 
-                                </Form.Field>
-                                <Form.Field>
-                                <label> Enter Tanks:</label>
-                                </Form.Field>                           
-                                <Button secondary type="button" onClick={this.addtank} icon='plus'></Button>
-                                <Button secondary type="button" onClick={this.removetank} icon='minus'></Button>
-                        </Grid.Column>
-                        
-                    </Grid.Row>
-                    <Grid.Row centered column={12}>
-                        {this.state.tankComponents.map(tankComp=>{
-                            return tankComp;
-                        })}
-                    </Grid.Row>
-                    <Grid.Row centered columns={12}>
-                        <Grid.Column width={2} >
-                            <Message error header='Error' content={this.state.errMessage} />    
-                            <Button primary type="submit">Submit</Button>
-                        </Grid.Column>
-                    </Grid.Row>
-                    </Grid>
-                    </Form>
-                    </div>
-                </Container>
-                </Segment>
-            </Sidebar.Pusher>
-            )
+                                    </Form.Field>
+                                    <Form.Field>
+                                    <label> Enter Tanks:</label>
+                                    </Form.Field>                           
+                                    <Button secondary type="button" onClick={this.addtank} icon='plus'></Button>
+                                    <Button secondary type="button" onClick={this.removetank} icon='minus'></Button>
+                            </Grid.Column>
+                            
+                        </Grid.Row>
+                        <Grid.Row centered column={12}>
+                            {this.state.tankComponents.map(tankComp=>{
+                                return tankComp;
+                            })}
+                        </Grid.Row>
+                        <Grid.Row centered columns={12}>
+                            <Grid.Column width={2} >
+                                <Message error header='Error' content={this.state.errMessage} />    
+                                <Button primary type="submit">Submit</Button>
+                            </Grid.Column>
+                        </Grid.Row>
+                        </Grid>
+                        </Form>
+                        </div>
+                    </Container>
+                    </Segment>
+                </Sidebar.Pusher>
+                )
+            }
         }
         else {
             if(this.state.isSubmitted) {
@@ -267,6 +285,8 @@ class Tank extends Component{
             this.callParentFunc(this.state.num, 'select', this.state.tank_type);
         });
     }
+
+    
     render(){
         return (
             <Grid.Column width={6} >
@@ -280,6 +300,99 @@ class Tank extends Component{
             <br />
             </Grid.Column>
 
+        )
+    }
+}
+
+class SelectStp extends Component {
+    constructor(props) {
+        super(props);
+        console.log("selectstp constructor")
+        
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.select = this.select.bind(this);
+
+    }
+
+
+    componentWillMount() {
+        this.setState({
+            isError: false,
+            errMessage: ''
+        })
+        axios.get("/stps")
+            .then( data => {
+                let stps= data.data;
+                let stpOpts = stps.map( stp => {
+                    return {
+                        key: stp.id,
+                        value: stp.id,
+                        text: `${stp.name} ${stp.id}` 
+                    }
+                })
+                this.setState({
+                    opts: stpOpts,
+                    isError: false,
+                })
+            })
+            .catch( err => {
+                this.setState({
+                    isEror: true,
+                    errMessage: err
+                })
+            })
+        
+    }
+
+    handleSubmit() {
+        axios.post("/stp/set", {
+                stpId: this.state.stpValue,
+                username: this.props.user.username
+             })
+            .then( data => {
+                data = data.data;
+                this.props.redirectFunction();
+            })
+            .catch( err => {
+                console.log(err);
+            })
+
+    }
+
+    select(event, data) {
+        this.setState({
+            stpValue: data.value
+        })
+    }
+
+    render() {
+        return (
+            <Sidebar.Pusher >
+                    <Segment basic>
+                    <Container>
+                        <div>
+                        <Form error={this.state.isError} onSubmit={this.handleSubmit}>
+                        <Grid verticalAlign='middle' >
+                        <Grid.Row>
+                        <Header as='h1' icon textAlign='center' >
+                            <Icon name='settings' color='black' circular/>
+                            STP Setup page
+                        </Header>
+                        </Grid.Row>
+                        <Grid.Row centered>
+                            <Form.Field control={Select}
+                                label={`Select the STP you want to supervise`} options={this.state.opts} placeholder='Select Stp...' onChange={this.select}  required/>
+                        </Grid.Row>
+                        <Grid.Row centered>
+                            <Message error header='Error' content={this.state.errMessage} />    
+                            <Button primary type="submit">Submit</Button>
+                        </Grid.Row>
+                        </Grid>
+                        </Form>
+                        </div>
+                    </Container>
+                    </Segment>
+                    </Sidebar.Pusher>
         )
     }
 }
