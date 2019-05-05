@@ -35,7 +35,7 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.pre(cors.preflight)
 server.use(cors.actual);
 // server.pre( (req, res, next) => { res.header("Access-Control-Allow-Origin", "*"); res.header("Access-Control-Allow-Headers", "X-Requested-With"); });
-server.use(rjwt(config.jwt).unless({ path: ['/auth',"/username", "/signup"] }));
+server.use(rjwt(config.jwt).unless({ path: ['/auth',"/username", "/signup", "/Tankdata"] }));
 
 server.get("/tank/:id", (req, res) => {
   console.log("GET TANK ID");
@@ -274,7 +274,7 @@ server.post("/setstp", (req, res) => {
       });
       Stp.create({id:id , name:name,street:street, state:state, pincode:pin})
         .then((tank) => {
-          res.send({"id":id});
+          rkes.send({"id":id});
         })
         .catch(err => {
           res.send(err);
@@ -365,6 +365,23 @@ server.post("/stp/set", (req, res) => {
       console.log(err);
       res.send(err);
     })
+})
+
+server.post("/Tankdata", (req,res) => {
+  console.log(req.body.trigger);
+  var { trigger, tankId, gas } = req.body;
+  if(trigger == 0)
+    trigger = false;
+  else
+    trigger = true;
+  Tank.update({ gas, trigger }, { where: { id: tankId } })
+    .then((tank) => {
+      res.send("OK");
+    })
+    .catch(err => {
+      res.send(err);
+    });
+  // res.send("Received data", level);
 })
 
 

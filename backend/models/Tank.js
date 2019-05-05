@@ -34,6 +34,14 @@ var Tank = sequelize.define('tank', {
 			min: 0
 		},
 		defaultValue: 0
+	},
+	gas: {
+		type: Sequelize.INTEGER,
+		defaultValue: 0
+	},
+	trigger: {
+		type: Sequelize.BOOLEAN,
+		defaultValue: false
 	}
 });
 Tank.belongsTo(Stp);

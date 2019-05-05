@@ -35,7 +35,7 @@ class Status extends React.Component {
 
         this.timerID = setInterval(
           this.update,
-          1000
+          5000
         );
     }
     componentWillUnmount() {
@@ -116,6 +116,9 @@ class Status extends React.Component {
                                 <Grid.Column width={6}>
                                     <h5>Tank {tank.id}</h5>
                                     <h5>Status: <span style={{color: (tank.status)?'green':'red'}}>{tank.status? "On": "Off"}</span></h5>
+                                    <h5>Gas: <span style={{color: 'orange'}}>{tank.gas.toString()}</span></h5>
+                                    {tank.trigger?
+                                        <Message error={tank.trigger} header='Alert' content={"High gas level alert"} /> : "" }
                                     {(user.role=='admin' || user.role=='op')?
                                         <Button loading={this.state.isStatusLoading} toggle active={tank.status} onClick={(e) => this.updateStatus(tank.id,tank.status)} >
                                             {(tank.status)?"Force Stop":"Force Start"}

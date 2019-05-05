@@ -2,7 +2,7 @@ const Stp = require('./models/Stp');
 const Tank = require('./models/Tank');
 const Notification = require('./models/Notification')
 
-let stpId = 'STP101'
+let stpId = 'STP102'
 
 simulate = async (stpId) => {
     try {
